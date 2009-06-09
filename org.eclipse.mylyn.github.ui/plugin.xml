@@ -2,12 +2,23 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         point="org.eclipse.mylyn.tasks.core.templates">
+      <repository
+            addAutomatically="true"
+            characterEncoding="UTF-8"
+            label="%org.eclipse.mylyn.github.ui.repository.test"
+            repositoryKind="github"
+            urlRepository="http://github.com/api/v2/json/issues/search/defunkt/github-issues">
+      </repository>
+   </extension>
+   <extension
          point="org.eclipse.mylyn.tasks.ui.repositories">
       <connectorCore
             class="org.eclipse.mylyn.github.ui.internal.RepositoryConnector"
             name="%org.eclipse.mylyn.github.ui.internal.RepositoryConnector">
       </connectorCore>
       <connectorUi
+            brandingIcon="images/git-logo.png"
             class="org.eclipse.mylyn.github.ui.internal.RepositoryConnectorUI"
             name="%org.eclipse.mylyn.github.ui.internal.RepositoryConnectorUI">
       </connectorUi>
