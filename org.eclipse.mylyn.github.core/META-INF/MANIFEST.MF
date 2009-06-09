@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Mylyn GitHub Core Plug-in
+Bundle-SymbolicName: org.eclipse.mylyn.github.core
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Christian Trutz
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
