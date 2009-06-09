@@ -37,13 +37,11 @@ public class RepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 
 	@Override
 	public ITaskRepositoryPage getSettingsPage(TaskRepository taskRepository) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean hasSearchPage() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -56,7 +54,6 @@ public class RepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 	@Override
 	public IWizard getQueryWizard(TaskRepository taskRepository,
 			IRepositoryQuery queryToEdit) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

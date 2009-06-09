@@ -45,8 +45,7 @@ public class RepositoryConnector extends AbstractRepositoryConnector {
 
 	@Override
 	public boolean canCreateTaskFromKey(TaskRepository repository) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -61,33 +60,31 @@ public class RepositoryConnector extends AbstractRepositoryConnector {
 
 	@Override
 	public String getRepositoryUrlFromTaskUrl(String taskFullUrl) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public TaskData getTaskData(TaskRepository taskRepository, String taskId,
 			IProgressMonitor monitor) throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		TaskAttributeMapper taskAttributeMapper = new TaskAttributeMapper(
+				taskRepository);
+		return new TaskData(taskAttributeMapper, taskRepository
+				.getConnectorKind(), taskRepository.getRepositoryUrl(), taskId);
 	}
 
 	@Override
 	public String getTaskIdFromTaskUrl(String taskFullUrl) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getTaskUrl(String repositoryUrl, String taskId) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean hasTaskChanged(TaskRepository taskRepository, ITask task,
 			TaskData taskData) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -95,22 +92,17 @@ public class RepositoryConnector extends AbstractRepositoryConnector {
 	public IStatus performQuery(TaskRepository repository,
 			IRepositoryQuery query, TaskDataCollector collector,
 			ISynchronizationSession session, IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void updateRepositoryConfiguration(TaskRepository taskRepository,
 			IProgressMonitor monitor) throws CoreException {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void updateTaskFromTaskData(TaskRepository taskRepository,
 			ITask task, TaskData taskData) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
