@@ -23,5 +23,12 @@
             name="%org.eclipse.mylyn.github.ui.internal.RepositoryConnectorUI">
       </connectorUi>
    </extension>
+   <extension
+         point="org.eclipse.mylyn.tasks.ui.editors">
+      <pageFactory
+            class="org.eclipse.mylyn.github.ui.internal.TaskEditorPageFactory"
+            id="org.eclipse.mylyn.github.ui.pageFactory">
+      </pageFactory>
+   </extension>
 
 </plugin>
