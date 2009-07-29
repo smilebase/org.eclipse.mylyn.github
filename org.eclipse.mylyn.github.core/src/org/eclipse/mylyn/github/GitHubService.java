@@ -36,10 +36,11 @@ public class GitHubService {
 	public GitHubIssues searchIssues(String user, String repo, String state,
 			String searchTerm) throws GitHubServiceException {
 		GitHubIssues issues = null;
-		// build HTTP GET method
-		GetMethod method = new GetMethod(gitURLBase + gitURLSearch + user + "/"
-				+ repo + "/" + state + "/" + searchTerm);
+		GetMethod method = null;
 		try {
+			// build HTTP GET method
+			method = new GetMethod(gitURLBase + gitURLSearch + user + "/"
+					+ repo + "/" + state + "/" + searchTerm);
 			// execute HTTP GET method
 			if (httpClient.executeMethod(method) == HttpStatus.SC_OK) {
 				// transform JSON to Java object
@@ -51,7 +52,8 @@ public class GitHubService {
 		} catch (Exception exception) {
 			throw new GitHubServiceException(exception);
 		} finally {
-			method.releaseConnection();
+			if (method != null)
+				method.releaseConnection();
 		}
 		return issues;
 

@@ -11,8 +11,8 @@ public class GitHubServiceTest {
 	@Test
 	public void createIssue() throws Exception {
 		GitHubService service = new GitHubService();
-		GitHubIssues issues = service.searchIssues("defunkt", "github-issues",
-				"open", "test");
+		GitHubIssues issues = service.searchIssues("smilebase",
+				"org.eclipse.mylyn.github.issues", "open", "test");
 		assertEquals(3, issues.getIssues().length);
 	}
 
