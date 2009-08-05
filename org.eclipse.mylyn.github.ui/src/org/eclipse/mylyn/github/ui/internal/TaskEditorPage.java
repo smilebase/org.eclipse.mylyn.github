@@ -6,7 +6,7 @@ import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 public class TaskEditorPage extends AbstractTaskEditorPage {
 
 	public TaskEditorPage(TaskEditor editor) {
-		super(editor, RepositoryConnector.KIND);
+		super(editor, GitHubRepositoryConnector.KIND);
 		setNeedsPrivateSection(false);
 	}
 
