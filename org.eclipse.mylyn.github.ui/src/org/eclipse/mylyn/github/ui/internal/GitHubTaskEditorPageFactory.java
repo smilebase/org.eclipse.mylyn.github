@@ -17,6 +17,7 @@
 package org.eclipse.mylyn.github.ui.internal;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.mylyn.tasks.ui.TasksUiUtil;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPageFactory;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorInput;
@@ -39,6 +40,10 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 	public boolean canCreatePageFor(TaskEditorInput input) {
 		if (GitHubRepositoryConnector.KIND.equals(input.getTask()
 				.getConnectorKind())) {
+			return true;
+		}
+		if (TasksUiUtil.isOutgoingNewTask(input.getTask(),
+				GitHubRepositoryConnector.KIND)) {
 			return true;
 		}
 		return false;

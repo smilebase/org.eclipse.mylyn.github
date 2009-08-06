@@ -22,6 +22,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.mylyn.github.GitHubIssue;
+import org.eclipse.mylyn.github.GitHubIssues;
+import org.eclipse.mylyn.github.GitHubService;
+import org.eclipse.mylyn.github.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.AbstractRepositoryConnector;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.ITask;
@@ -46,6 +50,8 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
 	public static final String KIND = "github";
 
+	private final GitHubService service = new GitHubService();
+
 	@Override
 	public boolean canCreateNewTask(TaskRepository repository) {
 		return true;
@@ -64,6 +70,37 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	@Override
 	public String getLabel() {
 		return "GitHub";
+	}
+
+	@Override
+	public IStatus performQuery(TaskRepository repository,
+			IRepositoryQuery query, TaskDataCollector collector,
+			ISynchronizationSession session, IProgressMonitor monitor) {
+
+		IStatus result = Status.OK_STATUS;
+		monitor.beginTask("Querying repository", IProgressMonitor.UNKNOWN);
+		try {
+			// perform query
+			GitHubIssues issues = service.searchIssues("smilebase",
+					"org.eclipse.mylyn.github.issues", "open", "test");
+
+			for (GitHubIssue issue : issues.getIssues()) {
+				TaskData data = new TaskData(
+						new TaskAttributeMapper(repository), KIND, repository
+								.getRepositoryUrl(), issue.getNumber());
+
+				data.setPartial(true);
+				collector.accept(data);
+			}
+
+			result = Status.OK_STATUS;
+
+		} catch (GitHubServiceException gitHubServiceException) {
+			result = Status.CANCEL_STATUS;
+		}
+
+		monitor.done();
+		return result;
 	}
 
 	@Override
@@ -94,25 +131,6 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	public boolean hasTaskChanged(TaskRepository taskRepository, ITask task,
 			TaskData taskData) {
 		return false;
-	}
-
-	@Override
-	public IStatus performQuery(TaskRepository repository,
-			IRepositoryQuery query, TaskDataCollector collector,
-			ISynchronizationSession session, IProgressMonitor monitor) {
-
-		IStatus result = Status.OK_STATUS;
-		monitor.beginTask("Querying repository", IProgressMonitor.UNKNOWN);
-
-		TaskData data = new TaskData(new TaskAttributeMapper(repository), KIND,
-				repository.getRepositoryUrl(), "1234");
-		data.setPartial(true);
-		collector.accept(data);
-
-		result = Status.OK_STATUS;
-
-		monitor.done();
-		return result;
 	}
 
 	@Override
