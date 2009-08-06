@@ -20,6 +20,12 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
 
+/**
+ * GitHub connector specific extensions.
+ * 
+ * @author Christian Trutz
+ * @since 0.1.0
+ */
 public class GitHubRepositorySettingsPage extends
 		AbstractRepositorySettingsPage {
 

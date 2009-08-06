@@ -16,11 +16,14 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPageFactory;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorInput;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.editor.IFormPage;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * Editor page factory for GitHub.
@@ -30,10 +33,12 @@ import org.eclipse.ui.forms.editor.IFormPage;
  */
 public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 
+	private Image gitLogoImage = null;
+
 	@Override
 	public boolean canCreatePageFor(TaskEditorInput input) {
-		if (GitHubRepositoryConnector.KIND
-				.equals(input.getTask().getTaskKind())) {
+		if (GitHubRepositoryConnector.KIND.equals(input.getTask()
+				.getConnectorKind())) {
 			return true;
 		}
 		return false;
@@ -41,7 +46,17 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 
 	@Override
 	public Image getPageImage() {
-		return null;
+		if (gitLogoImage != null)
+			return gitLogoImage;
+		ImageDescriptor imageDescriptor = AbstractUIPlugin
+				.imageDescriptorFromPlugin("org.eclipse.mylyn.github.ui",
+						"images/git-logo.png");
+		if (imageDescriptor == null) {
+			return null;
+		} else {
+			return gitLogoImage = new Image(Display.getCurrent(),
+					imageDescriptor.getImageData());
+		}
 	}
 
 	@Override

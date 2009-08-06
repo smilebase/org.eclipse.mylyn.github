@@ -37,9 +37,10 @@ import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 
 /**
+ * GitHub connector specific extensions.
  * 
  * @author Christian Trutz
- * 
+ * @since 0.1.0
  */
 public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
