@@ -26,47 +26,34 @@ import org.eclipse.mylyn.tasks.ui.wizards.NewTaskWizard;
 import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
 
 /**
+ * GitHub connector specific UI extensions.
  * 
  * @author Christian Trutz
+ * @since 0.1.0
  */
 public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getConnectorKind() {
 		return GitHubRepositoryConnector.KIND;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ITaskRepositoryPage getSettingsPage(TaskRepository taskRepository) {
 		return new GitHubRepositorySettingsPage(taskRepository);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean hasSearchPage() {
 		return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public IWizard getNewTaskWizard(TaskRepository taskRepository,
 			ITaskMapping taskSelection) {
 		return new NewTaskWizard(taskRepository, taskSelection);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public IWizard getQueryWizard(TaskRepository taskRepository,
 			IRepositoryQuery queryToEdit) {

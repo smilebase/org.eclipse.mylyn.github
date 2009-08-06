@@ -9,7 +9,7 @@ import org.junit.Test;
 public class GitHubServiceTest {
 
 	@Test
-	public void createIssue() throws Exception {
+	public void searchIssues() throws Exception {
 		GitHubService service = new GitHubService();
 		GitHubIssues issues = service.searchIssues("smilebase",
 				"org.eclipse.mylyn.github.issues", "open", "test");

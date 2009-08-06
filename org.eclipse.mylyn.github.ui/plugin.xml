@@ -19,8 +19,8 @@
    <extension
          point="org.eclipse.mylyn.tasks.ui.editors">
       <pageFactory
-            class="org.eclipse.mylyn.github.ui.internal.TaskEditorPageFactory"
-            id="org.eclipse.mylyn.github.ui.pageFactory">
+            class="org.eclipse.mylyn.github.ui.internal.GitHubTaskEditorPageFactory"
+            id="org.eclipse.mylyn.github.ui.internal.GitHubTaskEditorPageFactory">
       </pageFactory>
    </extension>
 
