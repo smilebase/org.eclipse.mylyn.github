@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * GitHub connector specific extensions.
@@ -33,6 +34,8 @@ import org.eclipse.swt.widgets.Label;
  */
 public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
+	private Text owner = null, project = null, status = null, queryText = null;
+
 	public GitHubRepositoryQueryPage(TaskRepository taskRepository,
 			IRepositoryQuery query) {
 		super("GitHub", taskRepository, query);
@@ -41,7 +44,10 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	@Override
 	public void applyTo(IRepositoryQuery query) {
 		query.setSummary("Test GitHub Query");
-        query.setAttribute("id", "QUERY1234");
+		query.setAttribute("owner", owner.getText());
+		query.setAttribute("project", project.getText());
+		query.setAttribute("status", status.getText());
+		query.setAttribute("queryText", queryText.getText());
 	}
 
 	@Override
@@ -53,8 +59,16 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData());
-		composite.setLayout(new GridLayout(1, false));
-		new Label(composite, SWT.BORDER).setText("HALLO");
+		composite.setLayout(new GridLayout(2, false));
+		new Label(composite, SWT.BORDER).setText("Owner:");
+		owner = new Text(composite, SWT.BORDER);
+		new Label(composite, SWT.BORDER).setText("Project:");
+		project = new Text(composite, SWT.BORDER);
+		new Label(composite, SWT.BORDER).setText("Status:");
+		status = new Text(composite, SWT.BORDER);
+		status.setText("open");
+		new Label(composite, SWT.BORDER).setText("Query text:");
+		queryText = new Text(composite, SWT.BORDER);
 		setControl(composite);
 	}
 

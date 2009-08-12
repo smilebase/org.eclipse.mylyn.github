@@ -78,24 +78,32 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 			ISynchronizationSession session, IProgressMonitor monitor) {
 
 		IStatus result = Status.OK_STATUS;
-		monitor.beginTask("Querying repository", IProgressMonitor.UNKNOWN);
+		monitor.beginTask("Querying repository ...", IProgressMonitor.UNKNOWN);
 		try {
+
 			// perform query
-			GitHubIssues issues = service.searchIssues("smilebase",
-					"org.eclipse.mylyn.github.issues", "open", "test");
+			GitHubIssues issues = service.searchIssues(query
+					.getAttribute("owner"), query.getAttribute("project"),
+					query.getAttribute("status"), query
+							.getAttribute("queryText"));
 
+			TaskAttributeMapper taskAttributeMapper = new TaskAttributeMapper(
+					repository);
+			String repositoryUrl = repository.getRepositoryUrl();
+
+			// collect task data
 			for (GitHubIssue issue : issues.getIssues()) {
-				TaskData data = new TaskData(
-						new TaskAttributeMapper(repository), KIND, repository
-								.getRepositoryUrl(), issue.getNumber());
-
-				data.setPartial(true);
+				TaskData data = new TaskData(taskAttributeMapper, KIND,
+						repositoryUrl, issue.getNumber());
+				TaskAttribute root = data.getRoot();
+				root.createAttribute(TaskAttribute.SUMMARY).setValue(
+						issue.getTitle());
 				collector.accept(data);
 			}
 
 			result = Status.OK_STATUS;
-
 		} catch (GitHubServiceException gitHubServiceException) {
+			// TODO inform user about this
 			result = Status.CANCEL_STATUS;
 		}
 
@@ -130,7 +138,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	@Override
 	public boolean hasTaskChanged(TaskRepository taskRepository, ITask task,
 			TaskData taskData) {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -141,6 +149,8 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	@Override
 	public void updateTaskFromTaskData(TaskRepository taskRepository,
 			ITask task, TaskData taskData) {
+		ITaskMapping taskMapping = getTaskMapping(taskData);
+		task.setSummary(taskMapping.getSummary());
 	}
 
 	@Override
