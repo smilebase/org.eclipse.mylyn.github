@@ -1,3 +1,6 @@
+h2. Installation
+
+coming soon ...
 
 h2. Developers
 
