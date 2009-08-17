@@ -11,6 +11,11 @@ import com.google.gson.Gson;
 
 public class GitHubService {
 
+	/**
+	 * GitHub Issues API Documentation: http://develop.github.com/p/issues.html
+	 */
+	
+	
 	private final String gitURLBase = "http://github.com/api/v2/json/";
 
 	private final String gitURLSearch = "issues/search/";
@@ -21,6 +26,9 @@ public class GitHubService {
 
 	private final Gson gson;
 
+	/**
+	 * Helper class, describing all of the possible GitHub API actions.
+	 */
 	public class GitHubAction {
 		public final static String OPEN = "open/";
 		public final static String CLOSE = "close/";
@@ -33,7 +41,7 @@ public class GitHubService {
 	}
 	
 	/**
-	 * 
+	 *  Constructor, create the client and JSON/Java interface object. 
 	 */
 	public GitHubService() {
 		httpClient = new HttpClient();
@@ -41,12 +49,15 @@ public class GitHubService {
 	}
 
 	/**
+	 * Search the GitHub Issues API for a given search term
 	 * 
-	 * @param user
-	 * @param repo
-	 * @param state
-	 * @param searchTerm
-	 * @return all founded issues
+	 * @param user - The user the repository is owned by
+	 * @param repo - The git repository where the issue tracker is hosted
+	 * @param state - The issue state you want to filter your search by
+	 * @param searchTerm - The text search term to find in the issues.
+	 * 
+	 * @return A GitHubIssues object containing all issues from the search results
+	 * 
 	 * @throws GitHubServiceException
 	 */
 	public GitHubIssues searchIssues(String user, String repo, String state,
@@ -75,6 +86,19 @@ public class GitHubService {
 
 	}
 	
+	/**
+	 * Add a label to an existing GitHub issue.
+	 * 
+	 * @param user - The user the repository is owned by
+	 * @param repo - The git repository where the issue tracker is hosted
+	 * @param label - The text label to add to the existing issue
+	 * @param issueNumber - The issue number to add a label to 
+	 * @param api - The users GitHub 
+	 * 
+	 * @return
+	 * 
+	 * @throws GitHubServiceException
+	 */
 	public GitHubIssues addLabel(String user, String repo, String label,
 			int issueNumber,String api) throws GitHubServiceException
 	{
@@ -101,6 +125,19 @@ public class GitHubService {
 		return issues;
 	}
 		
+	/**
+	 * Remove an existing label from an existing GitHub issue.
+	 * 
+	 * @param user - The user the repository is owned by
+	 * @param repo - The git repository where the issue tracker is hosted
+	 * @param label
+	 * @param issueNumber
+	 * @param api
+	 * 
+	 * @return A list of GitHub issues in the respone text.
+	 * 
+	 * @throws GitHubServiceException
+	 */
 	public GitHubIssues removeLabel(String user, String repo, String label,
 			int issueNumber, String api) throws GitHubServiceException
 	{
@@ -127,7 +164,18 @@ public class GitHubService {
 		return issues;
 	}
 	
-	public boolean openIssue( String repo, GitHubIssue issue ) throws GitHubServiceException
+	/**
+	 * Open a new issue using the GitHub Issues API.
+	 * 
+	 * @param user - The user the repository is owned by
+	 * @param repo - The git repository where the issue tracker is hosted
+	 * @param issue - The GitHub issue object to create on the issue tracker. 
+	 * 
+	 * @return A true/false describing the success of the operation.
+	 * 
+	 * @throws GitHubServiceException
+	 */
+	public boolean openIssue( String user, String repo, GitHubIssue issue ) throws GitHubServiceException
 	{
 		
 		if ( issue.getUser().equals("") || issue.getUser() == null ) {
@@ -141,7 +189,7 @@ public class GitHubService {
 			String title = URLEncoder.encode( "title=" + issue.getTitle(), "UTF-8" );
 			String body = URLEncoder.encode( "body=" + issue.getBody(), "UTF-8" );
 			// execute HTTP GET method
-			method = new PutMethod(gitURLBase + gitIssueRoot + GitHubAction.OPEN + issue.getUser() + "/" + repo+"?"+title+"&"+body);
+			method = new PutMethod(gitURLBase + gitIssueRoot + GitHubAction.OPEN + user + "/" + repo+"?"+title+"&"+body);
 			returnVal = httpClient.executeMethod(method);
 			System.out.println("[DEBUG] Response: " + method.getResponseBodyAsString());
 			System.out.println("[DEBUG] URL: " + method.getURI());
