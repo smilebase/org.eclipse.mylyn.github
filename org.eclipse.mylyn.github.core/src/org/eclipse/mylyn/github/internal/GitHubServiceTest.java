@@ -1,11 +1,10 @@
 package org.eclipse.mylyn.github.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import org.eclipse.mylyn.github.GitHubIssue;
-import org.eclipse.mylyn.github.GitHubService;
 import org.eclipse.mylyn.github.GitHubIssues;
+import org.eclipse.mylyn.github.GitHubService;
 import org.junit.Test;
 
 public class GitHubServiceTest {
@@ -19,12 +18,13 @@ public class GitHubServiceTest {
 
 	String TEST_PROJECT = "org.eclipse.mylyn.github.issues";
 
+	String REPO_USER = "smilebase";
+
 	@Test
 	public void searchIssues() throws Exception {
 		GitHubService service = new GitHubService();
-		GitHubIssues issues = service.searchIssues(TEST_USER, TEST_PROJECT,
+		GitHubIssues issues = service.searchIssues(REPO_USER, TEST_PROJECT,
 				"open", "test");
-		assertNotNull(issues);
 		assertEquals(0, issues.getIssues().length);
 	}
 
@@ -35,19 +35,18 @@ public class GitHubServiceTest {
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		service.openIssue(TEST_PROJECT, issue);
+		service.openIssue(REPO_USER, TEST_PROJECT, issue);
 	}
 
 	@Test
 	public void addLabel() throws Exception {
 		GitHubService service = new GitHubService();
-		service.addLabel(TEST_USER, TEST_PROJECT, "lame", 1, API_KEY);
+		service.addLabel(REPO_USER, TEST_PROJECT, "lame", 1, API_KEY);
 	}
 
 	@Test
 	public void removeLable() throws Exception {
 		GitHubService service = new GitHubService();
-		service.removeLabel("bgianfo", TEST_PROJECT, "lame", 1, API_KEY);
+		service.removeLabel(REPO_USER, TEST_PROJECT, "lame", 1, API_KEY);
 	}
-
 }
