@@ -1,0 +1,20 @@
+
+h2. Developers
+
+
+h3. Resources
+
+* "Eclipse Wiki Reference Page":http://wiki.eclipse.org/Mylyn_Integrator_Reference
+* "Eclipse SVN":http://dev.eclipse.org/viewsvn/
+* "Mylyn integration howto":http://jvliet.blogspot.com/2007/02/creating-mylar-connector-plugin-for.html
+* "Eclipse/Mylyn Trac Source":http://dev.eclipse.org/viewcvs/index.cgi/org.eclipse.mylyn/org.eclipse.mylyn.trac.ui/src/org/eclipse/mylyn/internal/trac/?root=Tools_Project
+* "Eclipse/Mylyn Ditz Source":http://github.com/mikegr/mylyn-ditz-connector/tree/master
+
+
+h3. Dependencies
+
+* "gson version 1.3":http://google-gson.googlecode.com/files/google-gson-1.3-release.zip
+* "commons-httpclient version 3.1":http://www.devlib.org/apache/httpcomponents/commons-httpclient/binary/commons-httpclient-3.1.tar.gz
+* "commons-logging version 1.0.4":http://archive.apache.org/dist/commons/logging/binaries/commons-logging-1.0.4.tar.gz
+* "commons-codec version 1.2":http://archive.apache.org/dist/commons/codec/binaries/commons-codec-1.2.tar.gz
+
