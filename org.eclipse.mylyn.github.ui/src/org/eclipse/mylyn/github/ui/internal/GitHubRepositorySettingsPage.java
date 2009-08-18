@@ -16,18 +16,29 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.mylyn.github.GitHubIssues;
+import org.eclipse.mylyn.github.GitHubService;
+import org.eclipse.mylyn.github.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.statushandlers.StatusAdapter;
 
 /**
  * GitHub connector specific extensions.
  * 
  * @author Christian Trutz
+ * @author Brian Gianforcaro
  * @since 0.1.0
  */
 public class GitHubRepositorySettingsPage extends
 		AbstractRepositorySettingsPage {
+
+	static final String URL = "http://www.github.org";
 
 	public GitHubRepositorySettingsPage(TaskRepository taskRepository) {
 		super("GitHub Repository Settings", "", taskRepository);
@@ -35,6 +46,23 @@ public class GitHubRepositorySettingsPage extends
 
 	@Override
 	public String getConnectorKind() {
+		// Set the  URL now, because serverURL is definitely instantiated .
+		if ( serverUrlCombo != null )
+		{
+		  serverUrlCombo.setText( URL );
+		}
+
+		if ( repositoryLabelEditor != null )
+		{
+		  repositoryLabelEditor.setStringValue( "GitHub Issue Tracker" );
+		}
+
+		if ( repositoryUserNameEditor != null )
+		{
+		  String text = repositoryUserNameEditor.getLabelText();
+		  repositoryUserNameEditor.setLabelText( "GitHub " + text );
+		}
+
 		return GitHubRepositoryConnector.KIND;
 	}
 
@@ -44,15 +72,44 @@ public class GitHubRepositorySettingsPage extends
 	}
 
 	@Override
-	protected Validator getValidator(TaskRepository repository) {
-		// TODO Auto-generated method stub
-		return null;
+	protected Validator getValidator(final TaskRepository repository) {
+		Validator validator = new Validator() {
+			@Override
+			public void run(IProgressMonitor monitor) throws CoreException {
+				monitor.worked(25);
+				monitor.beginTask("Starting..", 25);
+				String url = repository.getRepositoryUrl();
+				String user = repository.getUserName();
+				//String repo = repository.getRepositoryLabel();
+				String repo = new String("test");
+
+				GitHubService service = new GitHubService();
+
+				monitor.beginTask("Contacting Server...", 50);
+
+				try {
+				  service.searchIssues( user, repo, new String("open"), new String("") );
+				} catch (GitHubServiceException e) {
+				  String msg = new String("Repository Test failed:" + e.getMessage() );
+				  Status stat = new Status(Status.ERROR, GitHubRepositoryConnector.KIND, msg);
+				  this.setStatus(stat);
+				  monitor.done();
+				  return;
+				}
+				Status stat = new Status(Status.OK, GitHubRepositoryConnector.KIND, "Success!");
+				this.setStatus(stat);
+				monitor.done();
+			}
+		};
+		return validator;
 	}
 
 	@Override
-	protected boolean isValidUrl(String url) {
-		// TODO Auto-generated method stub
-		return true;
+	protected boolean isValidUrl( final String url ) {
+		if (url.contains("github")) {
+			return true;
+		} else  {
+			return false;
+		}
 	}
-
 }
