@@ -18,15 +18,12 @@ package org.eclipse.mylyn.github.ui.internal;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.mylyn.github.GitHubIssues;
 import org.eclipse.mylyn.github.GitHubService;
 import org.eclipse.mylyn.github.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.statushandlers.StatusAdapter;
 
 /**
  * GitHub connector specific extensions.
@@ -78,8 +75,8 @@ public class GitHubRepositorySettingsPage extends
 			public void run(IProgressMonitor monitor) throws CoreException {
 				monitor.worked(25);
 				monitor.beginTask("Starting..", 25);
-				String url = repository.getRepositoryUrl();
 				String user = repository.getUserName();
+				//String url = repository.getRepositoryUrl();
 				//String repo = repository.getRepositoryLabel();
 				String repo = new String("test");
 
