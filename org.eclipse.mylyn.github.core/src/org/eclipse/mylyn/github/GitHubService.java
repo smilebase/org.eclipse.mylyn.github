@@ -1,11 +1,26 @@
+/*
+ * Copyright 2009 Christian Trutz 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at 
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *  
+ */
 package org.eclipse.mylyn.github;
-
-import java.net.URLEncoder;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,9 +33,7 @@ public class GitHubService {
 	/**
 	 * GitHub Issues API Documentation: http://develop.github.com/p/issues.html
 	 */
-	private final String gitURLBase = "http://github.com/api/v2/json/";
-
-	private final String gitURLSearch = "issues/search/";
+	private final String gitURLBase = "https://github.com/api/v2/json/";
 
 	private final String gitIssueRoot = "issues/";
 
@@ -32,14 +45,16 @@ public class GitHubService {
 	 * Helper class, describing all of the possible GitHub API actions.
 	 */
 	public class GitHubAction {
-		public final static String OPEN = "open/";
-		public final static String CLOSE = "close/";
-		public final static String SEARCH = "search/";
-		public final static String REOPEN = "reopen/";
-		public final static String VIEW = "view/";
-		public final static String REMOVE_LABEL = "label/remove/";
-		public final static String ADD_LABEL = "label/add/";
-		public final static String COMMENT = "comment/";
+		public final static String OPEN         = "open/";         // Implemented
+		public final static String CLOSE        = "close/";
+		public final static String EDIT         = "edit/";         // Implemented
+		public final static String VIEW         = "view/";
+		public final static String LIST         = "list/";
+		public final static String SEARCH       = "search/";       // Implemented
+		public final static String REOPEN       = "reopen/";
+		public final static String COMMENT      = "comment/";
+		public final static String ADD_LABEL    = "label/add/";    // Implemented
+		public final static String REMOVE_LABEL = "label/remove/"; // Implemented
 	}
 
 	/**
@@ -73,8 +88,8 @@ public class GitHubService {
 		GetMethod method = null;
 		try {
 			// build HTTP GET method
-			method = new GetMethod(gitURLBase + gitURLSearch + user + "/"
-					+ repo + "/" + state + "/" + searchTerm);
+			method = new GetMethod(gitURLBase + gitIssueRoot +
+				GitHubAction.SEARCH+user+"/"+repo+"/"+state+"/"+searchTerm );
 			// execute HTTP GET method
 			if (httpClient.executeMethod(method) == HttpStatus.SC_OK) {
 				// transform JSON to Java object
@@ -90,7 +105,6 @@ public class GitHubService {
 				method.releaseConnection();
 		}
 		return issues;
-
 	}
 
 	/**
@@ -111,18 +125,31 @@ public class GitHubService {
 	 * 
 	 * @throws GitHubServiceException
 	 */
-	public GitHubIssues addLabel(String user, String repo, String label,
+	public boolean addLabel(String user, String repo, String label,
 			int issueNumber, String api) throws GitHubServiceException {
-		GitHubIssues issues = null;
-		GetMethod method = null;
+		PostMethod method = null;
+
+		boolean success = false;
+
 		try {
 			// build HTTP GET method
-			method = new GetMethod(gitURLBase + gitIssueRoot
+			method = new PostMethod(gitURLBase + gitIssueRoot
 					+ GitHubAction.ADD_LABEL + user + "/" + repo + "/" + label
 					+ "/" + Integer.toString(issueNumber));
+
+			// Set the users login and API token 
+			NameValuePair login = new NameValuePair( "login", user );
+			NameValuePair token = new NameValuePair( "token", api );
+			method.setRequestBody(new NameValuePair[] { login, token });
+
 			// execute HTTP GET method
 			if (httpClient.executeMethod(method) == HttpStatus.SC_OK) {
-				// transform JSON to Java object
+				// Check the response, make sure the action was successful
+				String response = method.getResponseBodyAsString();
+				if (response.contains(label.subSequence(0, label.length()))) {
+					success = true;
+				}
+
 				if (LOG.isDebugEnabled()) {
 					LOG.debug("Response: " + method.getResponseBodyAsString());
 					LOG.debug("URL: " + method.getURI());
@@ -136,7 +163,7 @@ public class GitHubService {
 			if (method != null)
 				method.releaseConnection();
 		}
-		return issues;
+		return success;
 	}
 
 	/**
@@ -154,20 +181,32 @@ public class GitHubService {
 	 * 
 	 * @throws GitHubServiceException
 	 */
-	public GitHubIssues removeLabel(String user, String repo, String label,
-			int issueNumber, String api) throws GitHubServiceException {
-		GitHubIssues issues = null;
-		GetMethod method = null;
+	public boolean removeLabel( String user, String repo, String label,
+			int issueNumber, String api ) throws GitHubServiceException {
+		PostMethod method = null;
+		boolean success = false;
 		try {
 			// build HTTP GET method
-			method = new GetMethod(gitURLBase + gitIssueRoot
+			method = new PostMethod(gitURLBase + gitIssueRoot
 					+ GitHubAction.REMOVE_LABEL + user + "/" + repo + "/"
 					+ label + "/" + Integer.toString(issueNumber));
+
+			// Set the users login and API token 
+			NameValuePair login = new NameValuePair( "login", user );
+			NameValuePair token = new NameValuePair( "token", api );
+			method.setRequestBody( new NameValuePair[] { login, token } );
+
 			// execute HTTP GET method
 			if (httpClient.executeMethod(method) == HttpStatus.SC_OK) {
-				// transform JSON to Java object
-				issues = gson.fromJson(new String(method.getResponseBody()),
-						GitHubIssues.class);
+				// Check the response, make sure the action was successful
+				String response = method.getResponseBodyAsString();
+				if ( !response.contains(label.subSequence(0, label.length())) ) {
+					success = true;
+				}
+				if (LOG.isDebugEnabled() ) {
+					LOG.debug("Response: " + method.getResponseBodyAsString());
+					LOG.debug("URL: " + method.getURI());
+				}
 			}
 		} catch (RuntimeException runtimeException) {
 			throw runtimeException;
@@ -177,7 +216,7 @@ public class GitHubService {
 			if (method != null)
 				method.releaseConnection();
 		}
-		return issues;
+		return success;
 	}
 
 	/**
@@ -194,7 +233,7 @@ public class GitHubService {
 	 * 
 	 * @throws GitHubServiceException
 	 */
-	public boolean openIssue(String user, String repo, GitHubIssue issue)
+	public boolean openIssue(String user, String repo, GitHubIssue issue, String api)
 			throws GitHubServiceException {
 
 		if (issue.getUser().equals("") || issue.getUser() == null) {
@@ -202,20 +241,40 @@ public class GitHubService {
 			throw new GitHubServiceException(e);
 		}
 
-		PutMethod method = null;
-		int returnVal = 0;
+		GitHubIssues issues = null;
+
+		PostMethod method = null;
+		boolean success = false;
 		try {
-			String title = URLEncoder.encode("title=" + issue.getTitle(),
-					"UTF-8");
-			String body = URLEncoder.encode("body=" + issue.getBody(), "UTF-8");
-			// execute HTTP GET method
-			method = new PutMethod(gitURLBase + gitIssueRoot
-					+ GitHubAction.OPEN + user + "/" + repo + "?" + title + "&"
-					+ body);
-			returnVal = httpClient.executeMethod(method);
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Response: " + method.getResponseBodyAsString());
-				LOG.debug("URL: " + method.getURI());
+			// Create the HTTP POST method
+			method = new PostMethod(gitURLBase + gitIssueRoot
+					+ GitHubAction.OPEN + user + "/" + repo );
+			// Set the users login and API token 
+			NameValuePair login = new NameValuePair( "login", user );
+			NameValuePair token = new NameValuePair( "token", api );
+			NameValuePair body = new NameValuePair( "body", issue.getBody() );
+			NameValuePair title = new NameValuePair( "title", issue.getTitle() );
+
+			method.setRequestBody( new NameValuePair[] { login, token, body, title } );
+
+			if( httpClient.executeMethod(method) == HttpStatus.SC_OK )
+			{
+				issues = gson.fromJson(new String(method.getResponseBody()),
+						GitHubIssues.class);
+
+				GitHubIssue ghIssues[] = issues.getIssues();
+				for( int i = 0; i < issues.getIssues().length; i++ )
+				{
+					boolean titleOk = ghIssues[i].getTitle().equals( issue.getTitle() );
+					boolean bodyOk = ghIssues[i].getBody().equals( issue.getBody() );
+					boolean userOk = ghIssues[i].getUser().equals( issue.getUser() );
+					success = titleOk && bodyOk && userOk;
+				}
+
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Response: " + method.getResponseBodyAsString());
+					LOG.debug("URL: " + method.getURI());
+				}
 			}
 		} catch (RuntimeException runTimeException) {
 			throw runTimeException;
@@ -224,10 +283,80 @@ public class GitHubService {
 		} finally {
 			if (method != null) {
 				method.releaseConnection();
-				if (returnVal == HttpStatus.SC_OK)
-					return true;
 			}
 		}
-		return false;
+		return success;
+	}
+
+	/**
+	 * Edit an existing issue using the GitHub Issues API.
+	 * 
+	 * @param user
+	 *            - The user the repository is owned by
+	 * @param repo
+	 *            - The git repository where the issue tracker is hosted
+	 * @param issue
+	 *            - The GitHub issue object to create on the issue tracker.
+	 * 
+	 * @return A true/false describing the success of the operation.
+	 * 
+	 * @throws GitHubServiceException
+	 */
+	public boolean editIssue(String user, String repo, GitHubIssue issue, String api)
+			throws GitHubServiceException {
+
+		if (issue.getUser().equals("") || issue.getUser() == null) {
+			final Exception e = new Exception("No username set");
+			throw new GitHubServiceException(e);
+		}
+
+		GitHubIssues issues = null;
+
+		PostMethod method = null;
+		boolean success = false;
+		try {
+			// Create the HTTP POST method
+			method = new PostMethod(gitURLBase + gitIssueRoot
+					+ GitHubAction.EDIT + user + "/" + repo +"/" + issue.getNumber() );
+			// Set the users login and API token 
+			NameValuePair login = new NameValuePair( "login", user );
+			NameValuePair token = new NameValuePair( "token", api );
+			NameValuePair body = new NameValuePair( "body", issue.getBody() );
+			NameValuePair title = new NameValuePair( "title", issue.getTitle() );
+
+			method.setRequestBody( new NameValuePair[] { login, token, body, title } );
+
+			if( httpClient.executeMethod(method) == HttpStatus.SC_OK )
+			{
+				issues = gson.fromJson( method.getResponseBodyAsString(),
+					GitHubIssues.class );
+				GitHubIssue ghIssues[] = issues.getIssues();
+				// Make sure the changes were made properly
+				for( int i = 0; i < issues.getIssues().length; i++ )
+				{
+					boolean titleOk = ghIssues[i].getTitle().equals( issue.getTitle() );
+					boolean bodyOk = ghIssues[i].getBody().equals( issue.getBody() );
+					boolean userOk = ghIssues[i].getUser().equals( issue.getUser() );
+					if(titleOk && bodyOk && userOk) {
+						success = true;
+						break;
+					}
+				}
+
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Response: " + method.getResponseBodyAsString());
+					LOG.debug("URL: " + method.getURI());
+				}
+			}
+		} catch (RuntimeException runTimeException) {
+			throw runTimeException;
+		} catch (Exception e) {
+			throw new GitHubServiceException(e);
+		} finally {
+			if (method != null) {
+				method.releaseConnection();
+			}
+		}
+		return success;
 	}
 }
