@@ -1,6 +1,8 @@
 h2. Installation
 
-Update site: http://smilebase.github.com/org.eclipse.mylyn.github/update
+h3. Update site
+
+"http://smilebase.github.com/org.eclipse.mylyn.github/update":http://smilebase.github.com/org.eclipse.mylyn.github/update
 
 h2. Developers
 
