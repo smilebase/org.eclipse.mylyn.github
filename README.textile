@@ -1,6 +1,6 @@
 h2. Installation
 
-coming soon ...
+Update site: http://smilebase.github.com/org.eclipse.mylyn.github/update
 
 h2. Developers
 
