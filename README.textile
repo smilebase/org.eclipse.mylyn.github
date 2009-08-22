@@ -1,4 +1,4 @@
-h2. Installation via Eclipse update site
+h2. Installation update site
 
 h3. http://smilebase.github.com/org.eclipse.mylyn.github/update
 
