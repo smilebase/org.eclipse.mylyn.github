@@ -5,17 +5,29 @@
       version="0.1.0.qualifier"
       provider-name="Christian Trutz">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="http://github.com/smilebase/org.eclipse.mylyn.github">
+      Eclipse Mylyn to GitHub connector.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright url="http://smilebase.github.com/org.eclipse.mylyn.github/">
+      Copyright 2009
+
+Christian Trutz (christian.trutz@gmail.com)
+Brian Gianforcaro (b.gianfo@gmail.com)
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="http://www.apache.org/licenses/LICENSE-2.0.html">
+      Apache License
+Version 2.0, January 2004
    </license>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.forms" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.mylyn.tasks.core" version="3.2.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.mylyn.tasks.ui" version="3.2.0" match="greaterOrEqual"/>
+   </requires>
 
    <plugin
          id="org.eclipse.mylyn.github.core"
