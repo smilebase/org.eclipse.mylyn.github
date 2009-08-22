@@ -1,8 +1,6 @@
 h2. Installation
 
-h3. Update site
-
-*http://smilebase.github.com/org.eclipse.mylyn.github/update*
+h3. Update site:   http://smilebase.github.com/org.eclipse.mylyn.github/update
 
 *WARNING* This connector has ALPHA status. 
 
