@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.eclipse.mylyn.github.feature_0.1.0.200908222011.jar" id="org.eclipse.mylyn.github.feature" version="0.1.0.200908222011">
+   <feature url="features/org.eclipse.mylyn.github.feature_0.1.0.200908222021.jar" id="org.eclipse.mylyn.github.feature" version="0.1.0.200908222021">
       <category name="org.eclipse.mylyn.github"/>
    </feature>
    <category-def name="org.eclipse.mylyn.github" label="Mylyn GitHub Integration"/>
