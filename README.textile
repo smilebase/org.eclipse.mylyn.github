@@ -6,6 +6,10 @@ h3. http://smilebase.github.com/org.eclipse.mylyn.github/update
 
 h2. Developers
 
+h3. Eclipse coding standards
+
+* "Sun's coding standards for Java":http://java.sun.com/docs/codeconv/index.html
+* "Naming Conventions":http://wiki.eclipse.org/Naming_Conventions#Examples_Packages
 
 h3. Resources
 
