@@ -48,7 +48,7 @@ public class GitHubService {
 		public final static String OPEN         = "open/";         // Implemented
 		public final static String CLOSE        = "close/";
 		public final static String EDIT         = "edit/";         // Implemented
-		public final static String VIEW         = "view/";
+		public final static String VIEW         = "view/";		
 		public final static String LIST         = "list/";
 		public final static String SEARCH       = "search/";       // Implemented
 		public final static String REOPEN       = "reopen/";
@@ -81,6 +81,8 @@ public class GitHubService {
 	 *         results
 	 * 
 	 * @throws GitHubServiceException
+	 * 
+	 * API Doc: /issues/search/:user/:repo/:state/:search_term
 	 */
 	public GitHubIssues searchIssues(String user, String repo, String state,
 			String searchTerm) throws GitHubServiceException {
@@ -124,6 +126,9 @@ public class GitHubService {
 	 * @return
 	 * 
 	 * @throws GitHubServiceException
+	 * 
+	 * API Doc: issues/label/add/:user/:repo/:label/:number
+	 * API POST Variables: login, api-token
 	 */
 	public boolean addLabel(String user, String repo, String label,
 			int issueNumber, String api) throws GitHubServiceException {
@@ -180,6 +185,9 @@ public class GitHubService {
 	 * @return A list of GitHub issues in the respone text.
 	 * 
 	 * @throws GitHubServiceException
+	 * 
+	 * API Doc: issues/label/remove/:user/:repo/:label/:number
+	 * API POST Variables: login, api-token
 	 */
 	public boolean removeLabel( String user, String repo, String label,
 			int issueNumber, String api ) throws GitHubServiceException {
@@ -232,6 +240,9 @@ public class GitHubService {
 	 * @return A true/false describing the success of the operation.
 	 * 
 	 * @throws GitHubServiceException
+	 * 
+	 * API Doc: issues/open/:user/:repo
+	 * API POST Variables: login, api-token, title, body
 	 */
 	public boolean openIssue(String user, String repo, GitHubIssue issue, String api)
 			throws GitHubServiceException {
@@ -301,6 +312,9 @@ public class GitHubService {
 	 * @return A true/false describing the success of the operation.
 	 * 
 	 * @throws GitHubServiceException
+	 * 
+	 * API Doc: issues/edit/:user/:repo/:number
+	 * API POST Variables: login, api-token, title, body
 	 */
 	public boolean editIssue(String user, String repo, GitHubIssue issue, String api)
 			throws GitHubServiceException {
