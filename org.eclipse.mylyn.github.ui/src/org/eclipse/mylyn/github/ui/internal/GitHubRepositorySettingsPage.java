@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Christian Trutz 
+
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,37 +36,54 @@ import org.eclipse.swt.widgets.Composite;
 public class GitHubRepositorySettingsPage extends
 		AbstractRepositorySettingsPage {
 
-	static final String URL = "http://www.github.org";
+	private static final String URL = "http://www.github.org";
 
-	public GitHubRepositorySettingsPage(TaskRepository taskRepository) {
+	private static final String PASS_LABEL_TEXT = "GitHub API Key";
+
+	private static final String PROJECT_LABEL_TEXT = "GitHub Project";
+
+	/**
+	 * Populate taskRepository with repository settings.
+	 * 
+	 * @param taskRepository
+	 *            - Object to populate
+	 */
+	public GitHubRepositorySettingsPage(final TaskRepository taskRepository) {
 		super("GitHub Repository Settings", "", taskRepository);
+		this.setHttpAuth(false);
+		this.setNeedsAdvanced(false);
+		this.setNeedsAnonymousLogin(false);
+		this.setNeedsTimeZone(false);
+		this.setNeedsHttpAuth(false);
 	}
 
 	@Override
 	public String getConnectorKind() {
-		// Set the  URL now, because serverURL is definitely instantiated .
-		if ( serverUrlCombo != null )
-		{
-		  serverUrlCombo.setText( URL );
-		}
-
-		if ( repositoryLabelEditor != null )
-		{
-		  repositoryLabelEditor.setStringValue( "GitHub Issue Tracker" );
-		}
-
-		if ( repositoryUserNameEditor != null )
-		{
-		  String text = repositoryUserNameEditor.getLabelText();
-		  repositoryUserNameEditor.setLabelText( "GitHub " + text );
-		}
-
 		return GitHubRepositoryConnector.KIND;
 	}
 
 	@Override
 	protected void createAdditionalControls(Composite parent) {
-		// TODO Auto-generated method stub
+		// Set the URL now, because serverURL is definitely instantiated .
+		if (serverUrlCombo != null) {
+			serverUrlCombo.setText(URL);
+			serverUrlCombo.setEnabled(false);
+		}
+
+		if (repositoryLabelEditor != null) {
+			repositoryLabelEditor.setLabelText(PROJECT_LABEL_TEXT);
+		}
+
+		// Specify that you need the GitHub User Name
+		if (repositoryUserNameEditor != null) {
+			String text = repositoryUserNameEditor.getLabelText();
+			repositoryUserNameEditor.setLabelText("GitHub " + text);
+		}
+
+		// Use the password field for the API Token Key
+		if (repositoryPasswordEditor != null) {
+			repositoryPasswordEditor.setLabelText(PASS_LABEL_TEXT);
+		}
 	}
 
 	@Override
@@ -76,8 +94,8 @@ public class GitHubRepositorySettingsPage extends
 				monitor.worked(25);
 				monitor.beginTask("Starting..", 25);
 				String user = repository.getUserName();
-				//String url = repository.getRepositoryUrl();
-				//String repo = repository.getRepositoryLabel();
+				// String url = repository.getRepositoryUrl();
+				// String repo = repository.getRepositoryLabel();
 				String repo = new String("test");
 
 				GitHubService service = new GitHubService();
@@ -85,15 +103,19 @@ public class GitHubRepositorySettingsPage extends
 				monitor.beginTask("Contacting Server...", 50);
 
 				try {
-				  service.searchIssues( user, repo, new String("open"), new String("") );
+					service.searchIssues(user, repo, new String("open"),
+							new String(""));
 				} catch (GitHubServiceException e) {
-				  String msg = new String("Repository Test failed:" + e.getMessage() );
-				  Status stat = new Status(Status.ERROR, GitHubRepositoryConnector.KIND, msg);
-				  this.setStatus(stat);
-				  monitor.done();
-				  return;
+					String msg = new String("Repository Test failed:"
+							+ e.getMessage());
+					Status stat = new Status(Status.ERROR,
+							GitHubRepositoryConnector.KIND, msg);
+					this.setStatus(stat);
+					monitor.done();
+					return;
 				}
-				Status stat = new Status(Status.OK, GitHubRepositoryConnector.KIND, "Success!");
+				Status stat = new Status(Status.OK,
+						GitHubRepositoryConnector.KIND, "Success!");
 				this.setStatus(stat);
 				monitor.done();
 			}
@@ -102,11 +124,11 @@ public class GitHubRepositorySettingsPage extends
 	}
 
 	@Override
-	protected boolean isValidUrl( final String url ) {
+	protected boolean isValidUrl(final String url) {
 		if (url.contains("github")) {
 			return true;
-		} else  {
-			return false;
 		}
+		return false;
 	}
+
 }

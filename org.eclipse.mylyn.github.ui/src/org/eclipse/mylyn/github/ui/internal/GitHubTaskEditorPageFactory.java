@@ -58,10 +58,10 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 						"images/git-logo.png");
 		if (imageDescriptor == null) {
 			return null;
-		} else {
-			return gitLogoImage = new Image(Display.getCurrent(),
-					imageDescriptor.getImageData());
 		}
+		
+		return gitLogoImage = new Image(Display.getCurrent(),
+				imageDescriptor.getImageData());
 	}
 
 	@Override

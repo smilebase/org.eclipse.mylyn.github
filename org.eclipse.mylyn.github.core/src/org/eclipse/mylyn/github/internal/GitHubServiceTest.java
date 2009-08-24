@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2009 Christian Trutz 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,9 @@ import org.eclipse.mylyn.github.GitHubIssues;
 import org.eclipse.mylyn.github.GitHubService;
 import org.junit.Test;
 
+/**
+ * Run All the JUnit Tests for the GitHub API implementation
+ */
 public class GitHubServiceTest {
 
 	// GitHub API key for user "eclipse-github-plugin"
@@ -35,36 +38,53 @@ public class GitHubServiceTest {
 
 	String TEST_PROJECT = "org.eclipse.mylyn.github.issues";
 
+	/**
+	 * Test the GitHubService issue searching implementation
+	 */
 	@Test
 	public void searchIssues() throws Exception {
-		GitHubService service = new GitHubService();
-		GitHubIssues issues = service.searchIssues(TEST_USER, TEST_PROJECT,
-				"open", "test");
+		final GitHubService service = new GitHubService();
+		final GitHubIssues issues = service.searchIssues(TEST_USER,
+				TEST_PROJECT, "open", "test");
 		assertEquals(0, issues.getIssues().length);
 	}
 
+	/**
+	 * Test the GitHubService implementation for opening a new issue.
+	 */
 	@Test
 	public void openIssue() throws Exception {
-		GitHubService service = new GitHubService();
-		GitHubIssue issue = new GitHubIssue();
+		final GitHubService service = new GitHubService();
+		final GitHubIssue issue = new GitHubIssue();
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		boolean result = service.openIssue(TEST_USER, TEST_PROJECT, issue, API_KEY);
-		assertTrue( result );
-	}
-
-	@Test
-	public void addLabel() throws Exception {
-		GitHubService service = new GitHubService();
-		boolean result = service.addLabel(TEST_USER, TEST_PROJECT, "lame", 1, API_KEY);
+		boolean result = service.openIssue(TEST_USER, TEST_PROJECT, issue,
+				API_KEY);
 		assertTrue(result);
 	}
 
+	/**
+	 * Test the GitHubService implementation for adding a label to an existing
+	 * issue.
+	 */
+	@Test
+	public void addLabel() throws Exception {
+		final GitHubService service = new GitHubService();
+		final boolean result = service.addLabel(TEST_USER, TEST_PROJECT,
+				"lame", 1, API_KEY);
+		assertTrue(result);
+	}
+
+	/**
+	 * Test the GitHubService implementation for removing an existing label from
+	 * any GitHub issue.
+	 */
 	@Test
 	public void removeLable() throws Exception {
-		GitHubService service = new GitHubService();
-		boolean result = service.removeLabel(TEST_USER, TEST_PROJECT, "lame", 1, API_KEY);
-		assertTrue( result );
+		final GitHubService service = new GitHubService();
+		final boolean result = service.removeLabel(TEST_USER, TEST_PROJECT,
+				"lame", 1, API_KEY);
+		assertTrue(result);
 	}
 }
