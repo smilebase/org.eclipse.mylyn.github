@@ -48,13 +48,13 @@ public class GitHubService {
 	 * Helper class, describing all of the possible GitHub API actions.
 	 */
 	private final static String OPEN = "open/"; // Implemented
-	private final static String CLOSE = "close/";
+	// private final static String CLOSE = "close/";
 	private final static String EDIT = "edit/"; // Implemented
-	private final static String VIEW = "view/";
-	private final static String LIST = "list/";
+	// private final static String VIEW = "view/";
+	// private final static String LIST = "list/";
 	private final static String SEARCH = "search/"; // Implemented
-	private final static String REOPEN = "reopen/";
-	private final static String COMMENT = "comment/";
+	// private final static String REOPEN = "reopen/";
+	// private final static String COMMENT = "comment/";
 	private final static String ADD_LABEL = "label/add/"; // Implemented
 	private final static String REMOVE_LABEL = "label/remove/"; // Implemented
 

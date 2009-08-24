@@ -27,8 +27,14 @@ import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
  */
 public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 
-	public GitHubTaskEditorPage(TaskEditor editor) {
-		super(editor, GitHubRepositoryConnector.KIND);
+	/**
+	 * Constructor for the GitHubTaskEditorPage
+	 * 
+	 * @param editor
+	 *            The task editor to create for GitHub
+	 */
+	public GitHubTaskEditorPage(final TaskEditor editor) {
+		super(editor, GitHubRepositoryConnector.getKind());
 		setNeedsPrivateSection(false);
 	}
 

@@ -35,7 +35,7 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 
 	@Override
 	public String getConnectorKind() {
-		return GitHubRepositoryConnector.KIND;
+		return GitHubRepositoryConnector.getKind();
 	}
 
 	@Override

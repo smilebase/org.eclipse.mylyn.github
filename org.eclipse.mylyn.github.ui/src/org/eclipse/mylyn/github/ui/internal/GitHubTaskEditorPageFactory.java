@@ -38,12 +38,12 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 
 	@Override
 	public boolean canCreatePageFor(TaskEditorInput input) {
-		if (GitHubRepositoryConnector.KIND.equals(input.getTask()
-				.getConnectorKind())) {
+		if (GitHubRepositoryConnector.getKind().equals(
+				input.getTask().getConnectorKind())) {
 			return true;
 		}
 		if (TasksUiUtil.isOutgoingNewTask(input.getTask(),
-				GitHubRepositoryConnector.KIND)) {
+				GitHubRepositoryConnector.getKind())) {
 			return true;
 		}
 		return false;
@@ -59,9 +59,9 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 		if (imageDescriptor == null) {
 			return null;
 		}
-		
-		return gitLogoImage = new Image(Display.getCurrent(),
-				imageDescriptor.getImageData());
+
+		return gitLogoImage = new Image(Display.getCurrent(), imageDescriptor
+				.getImageData());
 	}
 
 	@Override

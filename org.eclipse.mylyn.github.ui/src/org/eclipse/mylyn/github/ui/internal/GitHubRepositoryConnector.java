@@ -48,7 +48,7 @@ import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
  */
 public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
-	public static final String KIND = "github";
+	private static final String KIND = "github";
 
 	private final GitHubService service = new GitHubService();
 
@@ -64,6 +64,15 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
 	@Override
 	public String getConnectorKind() {
+		return KIND;
+	}
+
+	/**
+	 * Get the connector kind.
+	 * 
+	 * @return The connector kind as a string
+	 */
+	public static String getKind() {
 		return KIND;
 	}
 
@@ -93,7 +102,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
 			// collect task data
 			for (GitHubIssue issue : issues.getIssues()) {
-				TaskData data = new TaskData(taskAttributeMapper, KIND,
+				TaskData data = new TaskData(taskAttributeMapper, getKind(),
 						repositoryUrl, issue.getNumber());
 				TaskAttribute root = data.getRoot();
 				root.createAttribute(TaskAttribute.SUMMARY).setValue(
