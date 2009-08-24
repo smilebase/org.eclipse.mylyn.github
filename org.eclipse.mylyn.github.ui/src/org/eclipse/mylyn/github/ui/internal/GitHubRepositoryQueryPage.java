@@ -36,13 +36,17 @@ import org.eclipse.swt.widgets.Text;
 public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
 	private Text owner = null, project = null, queryText = null;
-	
+
 	private Combo statOptions = null;
-	
+
 	String states[] = { "open", "closed" };
 
-	public GitHubRepositoryQueryPage(TaskRepository taskRepository,
-			IRepositoryQuery query) {
+	/**
+	 * @param taskRepository
+	 * @param query
+	 */
+	public GitHubRepositoryQueryPage(final TaskRepository taskRepository,
+			final IRepositoryQuery query) {
 		super("GitHub", taskRepository, query);
 	}
 
@@ -51,7 +55,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		query.setSummary("Test GitHub Query");
 		query.setAttribute("owner", owner.getText());
 		query.setAttribute("project", project.getText());
-		query.setAttribute("status", statOptions.getText() );
+		query.setAttribute("status", statOptions.getText());
 		query.setAttribute("queryText", queryText.getText());
 	}
 
@@ -60,35 +64,35 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		return "GitHub Query";
 	}
 
-	@Override
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData());
 		composite.setLayout(new GridLayout(2, false));
-		
+
 		final int MAX_WIDTH = 20;
 		final int MAX_HEIGHT = 20;
-		
+
 		// Create the owner entry box
 		new Label(composite, SWT.BORDER).setText("Owner:");
 		owner = new Text(composite, SWT.BORDER);
-		owner.setBounds(owner.getBounds().x, owner.getBounds().y, MAX_WIDTH, MAX_HEIGHT);
-		
+		owner.setBounds(owner.getBounds().x, owner.getBounds().y, MAX_WIDTH,
+				MAX_HEIGHT);
+
 		// Create the project entry box
 		new Label(composite, SWT.BORDER).setText("Project:");
 		project = new Text(composite, SWT.BORDER);
-		
+
 		// Create the Status label and status option combo box
 		(new Label(composite, SWT.NULL)).setText("Status:");
 		statOptions = new Combo(composite, SWT.READ_ONLY);
 		statOptions.setItems(states);
 		// Set to a sane default
 		statOptions.setText("open");
-	    	
+
 		// Create the query entry box
 		new Label(composite, SWT.BORDER).setText("Query text:");
 		queryText = new Text(composite, SWT.BORDER);
-		
+
 		setControl(composite);
 	}
 
