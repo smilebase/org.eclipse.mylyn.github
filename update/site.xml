@@ -3,5 +3,5 @@
    <description name="Mylyn GitHub Integration" url="http://smilebase.github.com/org.eclipse.mylyn.github/update">
       Eclipse Mylyn to GitHub connector.
    </description>
-   <feature url="features/org.eclipse.mylyn.github.feature_0.1.0.200908222106.jar" id="org.eclipse.mylyn.github.feature" version="0.1.0.200908222106"/>
+   <feature url="features/org.eclipse.mylyn.github.feature_0.1.0.200909212206.jar" id="org.eclipse.mylyn.github.feature" version="0.1.0.200909212206"/>
 </site>
