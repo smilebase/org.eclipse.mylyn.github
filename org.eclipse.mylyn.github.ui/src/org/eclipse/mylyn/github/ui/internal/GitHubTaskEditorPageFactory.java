@@ -38,12 +38,12 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 
 	@Override
 	public boolean canCreatePageFor(TaskEditorInput input) {
-		if (GitHubRepositoryConnector.getKind().equals(
+		if (GitHubRepositoryConnector.KIND.equals(
 				input.getTask().getConnectorKind())) {
 			return true;
 		}
 		if (TasksUiUtil.isOutgoingNewTask(input.getTask(),
-				GitHubRepositoryConnector.getKind())) {
+				GitHubRepositoryConnector.KIND)) {
 			return true;
 		}
 		return false;

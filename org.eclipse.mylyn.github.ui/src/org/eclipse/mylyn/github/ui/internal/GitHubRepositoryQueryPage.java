@@ -20,6 +20,8 @@ import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositoryQueryPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -37,9 +39,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
 	private Text owner = null, project = null, queryText = null;
 
-	private Combo statOptions = null;
-
-	String states[] = { "open", "closed" };
+	private Combo status = null;
 
 	/**
 	 * @param taskRepository
@@ -48,15 +48,9 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 	public GitHubRepositoryQueryPage(final TaskRepository taskRepository,
 			final IRepositoryQuery query) {
 		super("GitHub", taskRepository, query);
-	}
-
-	@Override
-	public void applyTo(IRepositoryQuery query) {
-		query.setSummary("Test GitHub Query");
-		query.setAttribute("owner", owner.getText());
-		query.setAttribute("project", project.getText());
-		query.setAttribute("status", statOptions.getText());
-		query.setAttribute("queryText", queryText.getText());
+		setTitle("GitHub search query parameters");
+		setDescription("Valid search query parameters entered.");
+		setPageComplete(false);
 	}
 
 	@Override
@@ -64,36 +58,84 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		return "GitHub Query";
 	}
 
+	@Override
+	public void applyTo(IRepositoryQuery query) {
+		String ownerString = owner.getText();
+		String projectString = project.getText();
+		String statusString = status.getText();
+		String queryString = queryText.getText();
+		query.setSummary(ownerString + "/" + projectString + ":" + statusString
+				+ ":" + queryString);
+		query.setAttribute("owner", ownerString);
+		query.setAttribute("project", projectString);
+		query.setAttribute("status", statusString);
+		query.setAttribute("queryText", queryString);
+	}
+
+	/**
+	 * 
+	 * 
+	 */
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayoutData(new GridData());
-		composite.setLayout(new GridLayout(2, false));
+		GridLayout gridLayout = new GridLayout(2, false);
+		gridLayout.marginTop = 20;
+		gridLayout.marginLeft = 25;
+		gridLayout.verticalSpacing = 8;
+		gridLayout.horizontalSpacing = 8;
+		composite.setLayout(gridLayout);
 
-		final int MAX_WIDTH = 20;
-		final int MAX_HEIGHT = 20;
+		ModifyListener modifyListener = new ModifyListener() {
+			public void modifyText(ModifyEvent modifyEvent) {
+				setPageComplete(isPageComplete());
+			}
+		};
 
-		// Create the owner entry box
-		new Label(composite, SWT.BORDER).setText("Owner:");
+		// create the owner entry box
+		new Label(composite, SWT.NONE).setText("Owner:");
 		owner = new Text(composite, SWT.BORDER);
-		owner.setBounds(owner.getBounds().x, owner.getBounds().y, MAX_WIDTH,
-				MAX_HEIGHT);
+		GridData gridData = new GridData();
+		gridData.widthHint = 250;
+		owner.setLayoutData(gridData);
+		owner.addModifyListener(modifyListener);
 
-		// Create the project entry box
-		new Label(composite, SWT.BORDER).setText("Project:");
+		// create the project entry box
+		new Label(composite, SWT.NONE).setText("Project:");
 		project = new Text(composite, SWT.BORDER);
+		gridData = new GridData();
+		gridData.widthHint = 250;
+		project.setLayoutData(gridData);
+		project.addModifyListener(modifyListener);
 
-		// Create the Status label and status option combo box
-		(new Label(composite, SWT.NULL)).setText("Status:");
-		statOptions = new Combo(composite, SWT.READ_ONLY);
-		statOptions.setItems(states);
-		// Set to a sane default
-		statOptions.setText("open");
+		// create the status option combo box
+		new Label(composite, SWT.NONE).setText("Status:");
+		status = new Combo(composite, SWT.READ_ONLY);
+		status.setItems(new String[] { "open", "closed" });
+		status.setText("open");
 
-		// Create the query entry box
-		new Label(composite, SWT.BORDER).setText("Query text:");
+		// create the query entry box
+		new Label(composite, SWT.NONE).setText("Query text:");
 		queryText = new Text(composite, SWT.BORDER);
+		gridData = new GridData();
+		gridData.widthHint = 250;
+		queryText.setLayoutData(gridData);
 
 		setControl(composite);
+	}
+
+	@Override
+	public boolean isPageComplete() {
+		String ownerString = owner.getText();
+		String projectString = project.getText();
+		if (ownerString == null || ownerString.equals("")) { //$NON-NLS-1$
+			setErrorMessage("Owner must not be empty.");
+			return false;
+		} else if (projectString == null || projectString.equals("")) { //$NON-NLS-1$
+			setErrorMessage("Project name must not be empty.");
+			return false;
+		}
+		setErrorMessage(null);
+		return true;
 	}
 
 }

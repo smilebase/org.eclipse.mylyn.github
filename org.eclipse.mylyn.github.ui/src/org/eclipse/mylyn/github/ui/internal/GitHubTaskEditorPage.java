@@ -34,7 +34,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 	 *            The task editor to create for GitHub
 	 */
 	public GitHubTaskEditorPage(final TaskEditor editor) {
-		super(editor, GitHubRepositoryConnector.getKind());
+		super(editor, GitHubRepositoryConnector.KIND);
 		setNeedsPrivateSection(false);
 	}
 

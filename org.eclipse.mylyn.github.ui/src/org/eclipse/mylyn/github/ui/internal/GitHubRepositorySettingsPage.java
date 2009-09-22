@@ -59,7 +59,7 @@ public class GitHubRepositorySettingsPage extends
 
 	@Override
 	public String getConnectorKind() {
-		return GitHubRepositoryConnector.getKind();
+		return GitHubRepositoryConnector.KIND;
 	}
 
 	@Override
@@ -109,13 +109,13 @@ public class GitHubRepositorySettingsPage extends
 					String msg = new String("Repository Test failed:"
 							+ e.getMessage());
 					Status stat = new Status(Status.ERROR,
-							GitHubRepositoryConnector.getKind(), msg);
+							GitHubRepositoryConnector.KIND, msg);
 					this.setStatus(stat);
 					monitor.done();
 					return;
 				}
 				Status stat = new Status(Status.OK,
-						GitHubRepositoryConnector.getKind(), "Success!");
+						GitHubRepositoryConnector.KIND, "Success!");
 				this.setStatus(stat);
 				monitor.done();
 			}
