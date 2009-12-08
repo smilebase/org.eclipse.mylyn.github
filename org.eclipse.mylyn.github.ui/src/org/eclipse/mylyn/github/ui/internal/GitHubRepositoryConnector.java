@@ -24,15 +24,14 @@ import org.eclipse.mylyn.github.GitHubIssue;
 import org.eclipse.mylyn.github.GitHubIssues;
 import org.eclipse.mylyn.github.GitHubService;
 import org.eclipse.mylyn.github.GitHubServiceException;
-import org.eclipse.mylyn.github.GitHubTaskAttributes;
 import org.eclipse.mylyn.tasks.core.AbstractRepositoryConnector;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
-import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
+import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 
 /**
@@ -120,13 +119,8 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
 			// collect task data
 			for (GitHubIssue issue : issues.getIssues()) {
-				TaskData taskData = new TaskData(taskDataHandler
-						.getAttributeMapper(repository), KIND, repository
-						.getRepositoryUrl(), issue.getNumber());
-				TaskAttribute taskDataRoot = taskData.getRoot();
-				taskDataRoot.createAttribute(GitHubTaskAttributes.TITLE.name())
-						.setValue(issue.getTitle());
-				taskData.setPartial(true);
+				TaskData taskData = taskDataHandler.createPartialTaskData(
+						repository, monitor, issue);
 				collector.accept(taskData);
 			}
 
@@ -167,19 +161,20 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	}
 
 	@Override
-	public boolean hasTaskChanged(TaskRepository repository, ITask task,
-			TaskData taskData) {
-		return true;
-	}
-
-	@Override
 	public void updateRepositoryConfiguration(TaskRepository taskRepository,
 			IProgressMonitor monitor) throws CoreException {
 	}
 
 	@Override
+	public boolean hasTaskChanged(TaskRepository repository, ITask task,
+			TaskData taskData) {
+		return new TaskMapper(taskData).hasChanges(task);
+	}
+
+	@Override
 	public void updateTaskFromTaskData(TaskRepository taskRepository,
 			ITask task, TaskData taskData) {
+		new TaskMapper(taskData).applyTo(task);
 	}
 
 }
