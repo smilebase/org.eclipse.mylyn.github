@@ -51,7 +51,7 @@ public class GitHubService {
 	// private final static String CLOSE = "close/";
 	private final static String EDIT = "edit/"; // Implemented
 	// private final static String VIEW = "view/";
-	// private final static String LIST = "list/";
+	private final static String LIST = "list/"; // Implemented
 	private final static String SEARCH = "search/"; // Implemented
 	// private final static String REOPEN = "reopen/";
 	// private final static String COMMENT = "comment/";
@@ -92,8 +92,13 @@ public class GitHubService {
 		GetMethod method = null;
 		try {
 			// build HTTP GET method
-			method = new GetMethod(gitURLBase + gitIssueRoot + SEARCH + user
-					+ "/" + repo + "/" + state + "/" + searchTerm);
+		  if(searchTerm.trim().length() == 0) { // no search term: list all
+        method = new GetMethod(gitURLBase + gitIssueRoot + LIST 
+            + user + "/" + repo + "/" + state);
+		  } else {
+        method = new GetMethod(gitURLBase + gitIssueRoot + SEARCH 
+            + user + "/" + repo + "/" + state + "/" + searchTerm);
+      }
 			// execute HTTP GET method
 			if (httpClient.executeMethod(method) == HttpStatus.SC_OK) {
 				// transform JSON to Java object
