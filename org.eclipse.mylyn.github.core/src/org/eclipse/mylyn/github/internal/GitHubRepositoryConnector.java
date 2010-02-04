@@ -57,8 +57,12 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	/**
 	 * GitHub specific {@link AbstractTaskDataHandler}.
 	 */
-	private final GitHubTaskDataHandler taskDataHandler = new GitHubTaskDataHandler();
+	private final GitHubTaskDataHandler taskDataHandler;
 
+	public GitHubRepositoryConnector() {
+		taskDataHandler = new GitHubTaskDataHandler(this);
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 * 

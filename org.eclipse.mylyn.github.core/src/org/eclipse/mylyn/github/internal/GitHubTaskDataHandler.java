@@ -26,7 +26,12 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	 * 
 	 */
 	private GitHubTaskAttributeMapper taskAttributeMapper = null;
+	private final GitHubRepositoryConnector connector;
 
+	public GitHubTaskDataHandler(GitHubRepositoryConnector connector) {
+		this.connector = connector;
+	}
+	
 	@Override
 	public TaskAttributeMapper getAttributeMapper(TaskRepository taskRepository) {
 		if (this.taskAttributeMapper == null)
@@ -95,6 +100,9 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	public RepositoryResponse postTaskData(TaskRepository repository,
 			TaskData taskData, Set<TaskAttribute> oldAttributes,
 			IProgressMonitor monitor) throws CoreException {
+		
+		// FIXME support saving here
+		
 		return null;
 	}
 
