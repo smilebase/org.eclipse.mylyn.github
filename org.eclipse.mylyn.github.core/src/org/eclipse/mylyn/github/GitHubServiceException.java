@@ -35,4 +35,14 @@ public final class GitHubServiceException extends Exception {
 	protected GitHubServiceException(final Exception exception) {
 		super(exception);
 	}
+
+	protected GitHubServiceException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	protected GitHubServiceException(String message) {
+		super(message);
+	}
+	
+	
 }

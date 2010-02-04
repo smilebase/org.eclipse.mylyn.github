@@ -16,6 +16,9 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -55,6 +58,8 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 * GitHub specific {@link AbstractTaskDataHandler}.
 	 */
 	private final GitHubTaskDataHandler taskDataHandler = new GitHubTaskDataHandler();
+
+	static final Pattern URL_PATTERN = Pattern.compile(Pattern.quote(GitHubRepositorySettingsPage.URL)+"/([^/]+)/([^/]+)");
 
 	/**
 	 * {@inheritDoc}
@@ -110,39 +115,67 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		IStatus result = Status.OK_STATUS;
 		monitor.beginTask("Querying repository ...", IProgressMonitor.UNKNOWN);
 		try {
-
+			String user = computeTaskRepositoryUser(repository);
+			String project = computeTaskRepositoryProject(repository);
+			
 			// perform query
-			GitHubIssues issues = service.searchIssues(query
-					.getAttribute("owner"), query.getAttribute("project"),
+			GitHubIssues issues = service.searchIssues(user,project,
 					query.getAttribute("status"), query
 							.getAttribute("queryText"));
 
 			// collect task data
 			for (GitHubIssue issue : issues.getIssues()) {
 				TaskData taskData = taskDataHandler.createPartialTaskData(
-						repository, monitor, issue);
+						repository, monitor,user, project, issue);
 				collector.accept(taskData);
 			}
 
 			result = Status.OK_STATUS;
-		} catch (GitHubServiceException gitHubServiceException) {
-			// TODO inform user about this
-			result = Status.CANCEL_STATUS;
+		} catch (GitHubServiceException e) {
+			result = GitHubUi.createErrorStatus(e);
 		}
 
 		monitor.done();
 		return result;
 	}
 
+	private String computeTaskRepositoryProject(TaskRepository repository) {
+		Matcher matcher = URL_PATTERN.matcher(repository.getUrl());
+		if (matcher.matches()) {
+			return matcher.group(2);
+		}
+		return null;
+	}
+
+	private String computeTaskRepositoryUser(TaskRepository repository) {
+		Matcher matcher = URL_PATTERN.matcher(repository.getUrl());
+		if (matcher.matches()) {
+			return matcher.group(1);
+		}
+		return null;
+	}
+
 	@Override
-	public TaskData getTaskData(TaskRepository repo, String taskId,
+	public TaskData getTaskData(TaskRepository repository, String taskId,
 			IProgressMonitor monitor) throws CoreException {
 
-		String kind = repo.getConnectorKind();
-		String url = repo.getRepositoryUrl();
+		String user = computeTaskRepositoryUser(repository);
+		String project = computeTaskRepositoryProject(repository);
+		
+		String taskNumber = computeTaskNumber(taskId);
+		
+		try {
+			GitHubIssue issue = service.showIssue(user, project, taskNumber);
+			TaskData taskData = taskDataHandler.createTaskData(repository, monitor, user, project, issue);
+			
+			return taskData;
+		} catch (GitHubServiceException e) {
+			throw new CoreException(GitHubUi.createErrorStatus(e));
+		}
+	}
 
-		return new TaskData(taskDataHandler.getAttributeMapper(repo), kind,
-				url, taskId);
+	private String computeTaskNumber(String taskId) {
+		return taskId;
 	}
 
 	@Override

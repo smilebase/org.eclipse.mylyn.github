@@ -20,6 +20,8 @@ public class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 		String result = null;
 		if (key.equals(TaskAttribute.SUMMARY)) {
 			result = GitHubTaskAttributes.TITLE.name();
+		} else if (key.equals(TaskAttribute.DESCRIPTION)) {
+			result = GitHubTaskAttributes.BODY.name();
 		}
 		return result;
 	}

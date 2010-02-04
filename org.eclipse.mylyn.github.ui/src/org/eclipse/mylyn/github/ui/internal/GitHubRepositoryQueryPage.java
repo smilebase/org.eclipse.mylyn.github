@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.Text;
  */
 public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
-	private Text owner = null, project = null, queryText = null;
+	private Text queryText = null;
 
 	private Combo status = null;
 
@@ -60,14 +60,10 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
 	@Override
 	public void applyTo(IRepositoryQuery query) {
-		String ownerString = owner.getText();
-		String projectString = project.getText();
 		String statusString = status.getText();
 		String queryString = queryText.getText();
-		query.setSummary(ownerString + "/" + projectString + ":" + statusString
+		query.setSummary(statusString
 				+ ":" + queryString);
-		query.setAttribute("owner", ownerString);
-		query.setAttribute("project", projectString);
 		query.setAttribute("status", statusString);
 		query.setAttribute("queryText", queryString);
 	}
@@ -91,22 +87,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 			}
 		};
 
-		// create the owner entry box
-		new Label(composite, SWT.NONE).setText("Owner:");
-		owner = new Text(composite, SWT.BORDER);
-		GridData gridData = new GridData();
-		gridData.widthHint = 250;
-		owner.setLayoutData(gridData);
-		owner.addModifyListener(modifyListener);
-
-		// create the project entry box
-		new Label(composite, SWT.NONE).setText("Project:");
-		project = new Text(composite, SWT.BORDER);
-		gridData = new GridData();
-		gridData.widthHint = 250;
-		project.setLayoutData(gridData);
-		project.addModifyListener(modifyListener);
-
+		
 		// create the status option combo box
 		new Label(composite, SWT.NONE).setText("Status:");
 		status = new Combo(composite, SWT.READ_ONLY);
@@ -116,7 +97,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		// create the query entry box
 		new Label(composite, SWT.NONE).setText("Query text:");
 		queryText = new Text(composite, SWT.BORDER);
-		gridData = new GridData();
+		GridData gridData = new GridData();
 		gridData.widthHint = 250;
 		queryText.setLayoutData(gridData);
 
@@ -125,15 +106,6 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
 	@Override
 	public boolean isPageComplete() {
-		String ownerString = owner.getText();
-		String projectString = project.getText();
-		if (ownerString == null || ownerString.equals("")) { //$NON-NLS-1$
-			setErrorMessage("Owner must not be empty.");
-			return false;
-		} else if (projectString == null || projectString.equals("")) { //$NON-NLS-1$
-			setErrorMessage("Project name must not be empty.");
-			return false;
-		}
 		setErrorMessage(null);
 		return true;
 	}

@@ -21,6 +21,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskData;
  */
 public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
+	private static final String DATA_VERSION = "1";
 	/**
 	 * 
 	 */
@@ -35,30 +36,39 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	}
 
 	public TaskData createPartialTaskData(TaskRepository repository,
-			IProgressMonitor monitor, GitHubIssue issue) {
+			IProgressMonitor monitor,String user, String project, GitHubIssue issue) {
 
 		TaskData data = new TaskData(getAttributeMapper(repository),
 				GitHubRepositoryConnector.KIND, repository.getRepositoryUrl(),
 				issue.getNumber());
-		data.setVersion("1");
-
-		createAttribute(data, GitHubTaskAttributes.TITLE.name(), issue
-				.getTitle());
+		data.setVersion(DATA_VERSION);
+		
+		createAttribute(data, GitHubTaskAttributes.KEY,issue.getNumber());
+		createAttribute(data, GitHubTaskAttributes.TITLE, issue.getTitle());
+		createAttribute(data, GitHubTaskAttributes.BODY, issue.getBody());
 
 		data.setPartial(true);
 
 		return data;
 	}
-
-	private void createAttribute(TaskData data, String key, String value) {
-		TaskAttribute attr = data.getRoot().createAttribute(key);
+	
+	public TaskData createTaskData(TaskRepository repository,
+			IProgressMonitor monitor, String user, String project,
+			GitHubIssue issue) {
+		TaskData taskData = createPartialTaskData(repository, monitor, user, project, issue);
+		taskData.setPartial(false);
+		
+		return taskData;
+	}
+	
+	private void createAttribute(TaskData data, GitHubTaskAttributes attribute, String value) {
+		TaskAttribute attr = data.getRoot().createAttribute(attribute.name());
 		TaskAttributeMetaData metaData = attr.getMetaData();
-		metaData.defaults();
-
-		metaData.setType(TaskAttribute.TYPE_SHORT_TEXT);
-		metaData.setKind(TaskAttribute.KIND_DEFAULT);
-		metaData.setLabel("LABEL:");
-		metaData.setReadOnly(true);
+		metaData.defaults()
+			.setType(attribute.getType())
+			.setKind(attribute.getKind())
+			.setLabel(attribute.getLabel())
+			.setReadOnly(attribute.isReadOnly());
 
 		if (value != null) {
 			attr.addValue(value);
@@ -69,7 +79,16 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	public boolean initializeTaskData(TaskRepository repository, TaskData data,
 			ITaskMapping initializationData, IProgressMonitor monitor)
 			throws CoreException {
-		return false;
+		
+		data.setVersion(DATA_VERSION);
+
+		for (GitHubTaskAttributes attr: GitHubTaskAttributes.values()) {
+			if (attr.isInitTask()) {
+				createAttribute(data, attr,null);		
+			}
+		}
+		
+		return true;
 	}
 
 	@Override

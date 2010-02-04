@@ -17,6 +17,8 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import java.util.regex.Matcher;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -36,11 +38,9 @@ import org.eclipse.swt.widgets.Composite;
 public class GitHubRepositorySettingsPage extends
 		AbstractRepositorySettingsPage {
 
-	private static final String URL = "http://www.github.org";
+	static final String URL = "http://www.github.org";
 
 	private static final String PASS_LABEL_TEXT = "GitHub API Key";
-
-	private static final String PROJECT_LABEL_TEXT = "GitHub Project";
 
 	/**
 	 * Populate taskRepository with repository settings.
@@ -67,11 +67,6 @@ public class GitHubRepositorySettingsPage extends
 		// Set the URL now, because serverURL is definitely instantiated .
 		if (serverUrlCombo != null) {
 			serverUrlCombo.setText(URL);
-			serverUrlCombo.setEnabled(false);
-		}
-
-		if (repositoryLabelEditor != null) {
-			repositoryLabelEditor.setLabelText(PROJECT_LABEL_TEXT);
 		}
 
 		// Specify that you need the GitHub User Name
@@ -92,11 +87,18 @@ public class GitHubRepositorySettingsPage extends
 			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				monitor.worked(25);
+				
+				String urlText = repository.getUrl();
+				Matcher urlMatcher = GitHubRepositoryConnector.URL_PATTERN.matcher(urlText==null?"":urlText);
+				if (!urlMatcher.matches()) {
+					setStatus(new Status(Status.ERROR,GitHubRepositoryConnector.KIND, "Server URL must be in the form http://www.github.org/user/project"));
+					monitor.done();
+					return;
+				}
+				String user = urlMatcher.group(1);
+				String repo = urlMatcher.group(2);
+				
 				monitor.beginTask("Starting..", 25);
-				String user = repository.getUserName();
-				// String url = repository.getRepositoryUrl();
-				// String repo = repository.getRepositoryLabel();
-				String repo = new String("test");
 
 				GitHubService service = new GitHubService();
 
@@ -114,6 +116,9 @@ public class GitHubRepositorySettingsPage extends
 					monitor.done();
 					return;
 				}
+				
+				// FIXME username/API key test
+				
 				Status stat = new Status(Status.OK,
 						GitHubRepositoryConnector.KIND, "Success!");
 				this.setStatus(stat);

@@ -36,6 +36,7 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 	public GitHubTaskEditorPage(final TaskEditor editor) {
 		super(editor, GitHubRepositoryConnector.KIND);
 		setNeedsPrivateSection(false);
+		setNeedsSubmitButton(true);
 	}
 
 }

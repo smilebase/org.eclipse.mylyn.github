@@ -51,6 +51,7 @@ public class GitHubService {
 	// private final static String CLOSE = "close/";
 	private final static String EDIT = "edit/"; // Implemented
 	// private final static String VIEW = "view/";
+	private final static String SHOW = "show/"; // :user/:repo/:number
 	private final static String LIST = "list/"; // Implemented
 	private final static String SEARCH = "search/"; // Implemented
 	// private final static String REOPEN = "reopen/";
@@ -391,5 +392,37 @@ public class GitHubService {
 			}
 		}
 		return success;
+	}
+
+	public GitHubIssue showIssue(final String user, final String repo,final String issueNumber) throws GitHubServiceException {
+		GetMethod method = null;
+		try {
+			// build HTTP GET method
+			method = new GetMethod(gitURLBase + gitIssueRoot + SHOW 
+            + user + "/" + repo + "/" + issueNumber);
+			
+			// execute HTTP GET method
+			int status = httpClient.executeMethod(method);
+			if (status == HttpStatus.SC_OK) {
+				// transform JSON to Java object
+				GitHubShowIssue issue = gson.fromJson(new String(method.getResponseBody()),
+						GitHubShowIssue.class);
+				
+				return issue.getIssue();
+			} else {
+				String statusText = method.getStatusText();
+				throw new GitHubServiceException(String.format("HTTP %s: %s",status,statusText));
+			}
+		} catch (GitHubServiceException e) {
+			throw e;
+		} catch (final RuntimeException runtimeException) {
+			throw runtimeException;
+		} catch (final Exception exception) {
+			throw new GitHubServiceException(exception);
+		} finally {
+			if (method != null) {
+				method.releaseConnection();
+			}
+		}
 	}
 }
