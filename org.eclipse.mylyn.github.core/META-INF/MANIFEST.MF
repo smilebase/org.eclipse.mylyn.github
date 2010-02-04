@@ -29,6 +29,7 @@ Export-Package: com.google.gson;x-friends:="org.eclipse.mylyn.github.tests",
  org.apache.commons.logging;x-friends:="org.eclipse.mylyn.github.tests",
  org.apache.commons.logging.impl;x-friends:="org.eclipse.mylyn.github.tests",
  org.eclipse.mylyn.github,
- org.eclipse.mylyn.github.internal;x-internal:=true
+ org.eclipse.mylyn.github.internal;x-friends:="org.eclipse.mylyn.github.ui"
 Require-Bundle: org.junit4;bundle-version="4.5.0",
- org.eclipse.mylyn.tasks.core;bundle-version="3.3.0"
+ org.eclipse.mylyn.tasks.core;bundle-version="3.3.0",
+ org.eclipse.core.runtime;bundle-version="3.5.0"

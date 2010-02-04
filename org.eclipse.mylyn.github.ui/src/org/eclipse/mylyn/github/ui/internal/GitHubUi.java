@@ -2,7 +2,6 @@ package org.eclipse.mylyn.github.ui.internal;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.mylyn.github.GitHubServiceException;
 
 class GitHubUi {
 	public static final String BUNDLE_ID = "org.eclipse.mylyn.github.ui";

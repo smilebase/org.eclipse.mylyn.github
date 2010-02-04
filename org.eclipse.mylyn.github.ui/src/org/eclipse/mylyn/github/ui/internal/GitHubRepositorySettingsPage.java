@@ -21,9 +21,11 @@ import java.util.regex.Matcher;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.github.GitHubService;
 import org.eclipse.mylyn.github.GitHubServiceException;
+import org.eclipse.mylyn.github.internal.GitHub;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
@@ -59,7 +61,7 @@ public class GitHubRepositorySettingsPage extends
 
 	@Override
 	public String getConnectorKind() {
-		return GitHubRepositoryConnector.KIND;
+		return GitHub.CONNECTOR_KIND;
 	}
 
 	@Override
@@ -89,9 +91,9 @@ public class GitHubRepositorySettingsPage extends
 				monitor.worked(25);
 				
 				String urlText = repository.getUrl();
-				Matcher urlMatcher = GitHubRepositoryConnector.URL_PATTERN.matcher(urlText==null?"":urlText);
+				Matcher urlMatcher = GitHub.URL_PATTERN.matcher(urlText==null?"":urlText);
 				if (!urlMatcher.matches()) {
-					setStatus(new Status(Status.ERROR,GitHubRepositoryConnector.KIND, "Server URL must be in the form http://www.github.org/user/project"));
+					setStatus(GitHubUi.createErrorStatus("Server URL must be in the form http://www.github.org/user/project"));
 					monitor.done();
 					return;
 				}
@@ -110,17 +112,15 @@ public class GitHubRepositorySettingsPage extends
 				} catch (GitHubServiceException e) {
 					String msg = new String("Repository Test failed:"
 							+ e.getMessage());
-					Status stat = new Status(Status.ERROR,
-							GitHubRepositoryConnector.KIND, msg);
-					this.setStatus(stat);
+					this.setStatus(GitHubUi.createErrorStatus(msg));
 					monitor.done();
 					return;
 				}
 				
 				// FIXME username/API key test
 				
-				Status stat = new Status(Status.OK,
-						GitHubRepositoryConnector.KIND, "Success!");
+				Status stat = new Status(IStatus.OK,
+						GitHubUi.BUNDLE_ID, "Success!");
 				this.setStatus(stat);
 				monitor.done();
 			}

@@ -14,10 +14,9 @@
  * limitations under the License.
  *  
  */
-package org.eclipse.mylyn.github.ui.internal;
+package org.eclipse.mylyn.github.internal;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -44,10 +43,11 @@ import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
  */
 public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
+
 	/**
 	 * GitHub kind.
 	 */
-	protected static final String KIND = "github";
+	protected static final String KIND = GitHub.CONNECTOR_KIND;
 
 	/**
 	 * GitHub service which creates, lists, deletes, etc. GitHub tasks.
@@ -58,8 +58,6 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	 * GitHub specific {@link AbstractTaskDataHandler}.
 	 */
 	private final GitHubTaskDataHandler taskDataHandler = new GitHubTaskDataHandler();
-
-	static final Pattern URL_PATTERN = Pattern.compile(Pattern.quote(GitHubRepositorySettingsPage.URL)+"/([^/]+)/([^/]+)");
 
 	/**
 	 * {@inheritDoc}
@@ -132,7 +130,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
 			result = Status.OK_STATUS;
 		} catch (GitHubServiceException e) {
-			result = GitHubUi.createErrorStatus(e);
+			result = GitHub.createErrorStatus(e);
 		}
 
 		monitor.done();
@@ -140,7 +138,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	}
 
 	private String computeTaskRepositoryProject(TaskRepository repository) {
-		Matcher matcher = URL_PATTERN.matcher(repository.getUrl());
+		Matcher matcher = GitHub.URL_PATTERN.matcher(repository.getUrl());
 		if (matcher.matches()) {
 			return matcher.group(2);
 		}
@@ -148,7 +146,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	}
 
 	private String computeTaskRepositoryUser(TaskRepository repository) {
-		Matcher matcher = URL_PATTERN.matcher(repository.getUrl());
+		Matcher matcher = GitHub.URL_PATTERN.matcher(repository.getUrl());
 		if (matcher.matches()) {
 			return matcher.group(1);
 		}
@@ -170,7 +168,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 			
 			return taskData;
 		} catch (GitHubServiceException e) {
-			throw new CoreException(GitHubUi.createErrorStatus(e));
+			throw new CoreException(GitHub.createErrorStatus(e));
 		}
 	}
 

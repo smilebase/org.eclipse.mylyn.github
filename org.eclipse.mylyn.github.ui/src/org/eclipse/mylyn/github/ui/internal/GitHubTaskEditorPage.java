@@ -16,7 +16,11 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import org.eclipse.mylyn.github.internal.GitHub;
+import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
+import org.eclipse.mylyn.tasks.ui.editors.AbstractAttributeEditor;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPage;
+import org.eclipse.mylyn.tasks.ui.editors.AttributeEditorFactory;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 
 /**
@@ -34,9 +38,19 @@ public class GitHubTaskEditorPage extends AbstractTaskEditorPage {
 	 *            The task editor to create for GitHub
 	 */
 	public GitHubTaskEditorPage(final TaskEditor editor) {
-		super(editor, GitHubRepositoryConnector.KIND);
+		super(editor, GitHub.CONNECTOR_KIND);
 		setNeedsPrivateSection(false);
 		setNeedsSubmitButton(true);
 	}
-
+	@Override
+	protected AttributeEditorFactory createAttributeEditorFactory() {
+		return new AttributeEditorFactory(getModel(), getTaskRepository(), getEditorSite()) {
+			@Override
+			public AbstractAttributeEditor createEditor(String type,
+					TaskAttribute taskAttribute) {
+				// TODO Auto-generated method stub
+				return super.createEditor(type, taskAttribute);
+			}
+		};
+	}
 }

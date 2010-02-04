@@ -1,4 +1,4 @@
-package org.eclipse.mylyn.github.ui.internal;
+package org.eclipse.mylyn.github.internal;
 
 import java.util.Set;
 
