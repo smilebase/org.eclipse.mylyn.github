@@ -447,7 +447,7 @@ public class GitHubService {
 	public GitHubIssue reopenIssue(String user, String repo, GitHubIssue issue,
 			GitHubCredentials credentials) throws GitHubServiceException {
 		issue = editIssue(user, repo, issue, credentials);
-		return submitEdit(user, repo, REOPEN, issue, credentials);
+		return changeIssueStatus(user, repo, REOPEN, issue, credentials);
 	}
 
 	/**
@@ -470,12 +470,12 @@ public class GitHubService {
 	public GitHubIssue closeIssue(String user, String repo, GitHubIssue issue,
 			GitHubCredentials credentials) throws GitHubServiceException {
 		issue = editIssue(user, repo, issue, credentials);
-		return submitEdit(user, repo, CLOSE, issue, credentials);
+		return changeIssueStatus(user, repo, CLOSE, issue, credentials);
 		
 	}
 	
 
-	private GitHubIssue submitEdit(final String user, final String repo,
+	private GitHubIssue changeIssueStatus(final String user, final String repo,
 			String githubOperation, final GitHubIssue issue,
 			final GitHubCredentials credentials) throws GitHubServiceException {
 		PostMethod method = null;
