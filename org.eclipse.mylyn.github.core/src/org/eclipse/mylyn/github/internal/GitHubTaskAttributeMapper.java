@@ -1,5 +1,9 @@
 package org.eclipse.mylyn.github.internal;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +19,8 @@ public class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 
 	private Map<String,String> commonKeyToRepositoryKey = new HashMap<String, String>();
 	
+	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
+	
 	public GitHubTaskAttributeMapper(TaskRepository taskRepository) {
 		super(taskRepository);
 		for (GitHubTaskAttributes attr: GitHubTaskAttributes.values()) {
@@ -29,4 +35,16 @@ public class GitHubTaskAttributeMapper extends TaskAttributeMapper {
 		return commonKeyToRepositoryKey.get(key);
 	}
 
+	@Override
+	public Date getDateValue(TaskAttribute attribute) {
+		String value = attribute.getValue();
+		if (value != null) {
+			try {
+				return dateFormat.parse(value);
+			} catch (ParseException e) {
+				return super.getDateValue(attribute);
+			}
+		}
+		return null;
+	}
 }

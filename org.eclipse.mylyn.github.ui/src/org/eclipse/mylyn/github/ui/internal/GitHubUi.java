@@ -1,6 +1,8 @@
 package org.eclipse.mylyn.github.ui.internal;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 class GitHubUi {
@@ -24,5 +26,17 @@ class GitHubUi {
 
 	public static IStatus createErrorStatus(Throwable e) {
 		return createStatus(IStatus.ERROR, "Unexpected error: "+e.getMessage(),e);
+	}
+	
+	public static ILog getLog() {
+		return Platform.getLog(Platform.getBundle(BUNDLE_ID));
+	}
+	
+	public static void logError(String message,Throwable t) {
+		getLog().log(createErrorStatus(message, t));
+	}
+	
+	public static void logError(Throwable t) {
+		getLog().log(createErrorStatus(t.getMessage(), t));
 	}
 }

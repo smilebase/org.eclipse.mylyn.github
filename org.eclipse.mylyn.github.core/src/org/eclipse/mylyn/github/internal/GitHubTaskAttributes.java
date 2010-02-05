@@ -6,7 +6,15 @@ public enum GitHubTaskAttributes {
 
 	KEY("Key",TaskAttribute.TASK_KEY,TaskAttribute.TYPE_SHORT_TEXT,true,true),
 	TITLE("Summary",TaskAttribute.SUMMARY,TaskAttribute.TYPE_SHORT_TEXT,false,true), 
-	BODY("Description",TaskAttribute.DESCRIPTION,TaskAttribute.TYPE_LONG_RICH_TEXT,false,true);
+	BODY("Description",TaskAttribute.DESCRIPTION,TaskAttribute.TYPE_LONG_RICH_TEXT,false,true),
+	
+	CREATION_DATE("Created",TaskAttribute.DATE_CREATION,TaskAttribute.TYPE_DATETIME,true,false),
+	MODIFICATION_DATE("Modified",TaskAttribute.DATE_MODIFICATION,TaskAttribute.TYPE_DATETIME,true,false),
+	CLOSED_DATE("Closed",TaskAttribute.DATE_COMPLETION,TaskAttribute.TYPE_DATETIME,true,false),
+	
+	STATUS("Status",TaskAttribute.STATUS,TaskAttribute.TYPE_SHORT_TEXT,false,true)
+	;
+	
 
 	private String label;
 	private String commonKey;
