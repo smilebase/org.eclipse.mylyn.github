@@ -19,6 +19,7 @@ package org.eclipse.mylyn.github.ui.internal;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.mylyn.github.internal.GitHub;
 import org.eclipse.mylyn.github.internal.GitHubRepositoryConnector;
+import org.eclipse.mylyn.tasks.ui.ITasksUiConstants;
 import org.eclipse.mylyn.tasks.ui.TasksUiUtil;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPageFactory;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
@@ -72,8 +73,18 @@ public class GitHubTaskEditorPageFactory extends AbstractTaskEditorPageFactory {
 	}
 
 	@Override
+	public int getPriority() {
+		return PRIORITY_TASK;
+	}
+	
+	@Override
 	public IFormPage createPage(TaskEditor parentEditor) {
 		return new GitHubTaskEditorPage(parentEditor);
+	}
+	
+	@Override
+	public String[] getConflictingIds(TaskEditorInput input) {
+		return new String[] { ITasksUiConstants.ID_PAGE_PLANNING };
 	}
 
 }
