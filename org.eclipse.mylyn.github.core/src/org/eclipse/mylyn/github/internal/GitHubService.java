@@ -52,7 +52,8 @@ public class GitHubService {
 	 * Helper class, describing all of the possible GitHub API actions.
 	 */
 	private final static String OPEN = "open/"; // Implemented
-	// private final static String CLOSE = "close/";
+	private static final String REOPEN = "reopen/";
+	private final static String CLOSE = "close/";
 	private final static String EDIT = "edit/"; // Implemented
 	// private final static String VIEW = "view/";
 	private final static String SHOW = "show/"; // :user/:repo/:number
@@ -62,6 +63,7 @@ public class GitHubService {
 	// private final static String COMMENT = "comment/";
 	private final static String ADD_LABEL = "label/add/"; // Implemented
 	private final static String REMOVE_LABEL = "label/remove/"; // Implemented
+
 
 	/**
 	 * Constructor, create the client and JSON/Java interface object.
@@ -332,11 +334,9 @@ public class GitHubService {
 	public GitHubIssue editIssue(final String user, final String repo,
 			final GitHubIssue issue,final GitHubCredentials credentials)
 			throws GitHubServiceException {
-
-		GitHubShowIssue showIssue = null;
-
 		PostMethod method = null;
 		try {
+			
 			// Create the HTTP POST method
 			method = new PostMethod(gitURLBase + gitIssueRoot + EDIT + user
 					+ "/" + repo + "/" + issue.getNumber());
@@ -352,7 +352,7 @@ public class GitHubService {
 					title });
 
 			executeMethod(method);
-			showIssue = gson.fromJson(method.getResponseBodyAsString(),
+			GitHubShowIssue showIssue = gson.fromJson(method.getResponseBodyAsString(),
 						GitHubShowIssue.class);
 				
 			// Make sure the changes were made properly
@@ -378,6 +378,7 @@ public class GitHubService {
 			}
 		}
 	}
+
 
 	public GitHubIssue showIssue(final String user, final String repo,final String issueNumber) throws GitHubServiceException {
 		GetMethod method = null;
@@ -422,6 +423,97 @@ public class GitHubService {
 				throw new PermissionDeniedException(method.getStatusLine());
 			default:
 				throw new GitHubServiceException(method.getStatusLine());
+			}
+		}
+	}
+
+	/**
+	 * Edit an existing issue using the GitHub Issues API and change its status to open.
+	 * 
+	 * @param user
+	 *            - The user the repository is owned by
+	 * @param repo
+	 *            - The git repository where the issue tracker is hosted
+	 * @param issue
+	 *            - The GitHub issue object to create on the issue tracker.
+	 * 
+	 * @return the issue with changes
+	 * 
+	 * @throws GitHubServiceException
+	 * 
+	 *             API Doc: issues/reopen/:user/:repo/:number API POST Variables:
+	 *             login, api-token, title, body
+	 */
+	public GitHubIssue reopenIssue(String user, String repo, GitHubIssue issue,
+			GitHubCredentials credentials) throws GitHubServiceException {
+		issue = editIssue(user, repo, issue, credentials);
+		return submitEdit(user, repo, REOPEN, issue, credentials);
+	}
+
+	/**
+	 * Edit an existing issue using the GitHub Issues API and change its status to closed.
+	 * 
+	 * @param user
+	 *            - The user the repository is owned by
+	 * @param repo
+	 *            - The git repository where the issue tracker is hosted
+	 * @param issue
+	 *            - The GitHub issue object to create on the issue tracker.
+	 * 
+	 * @return the issue with changes
+	 * 
+	 * @throws GitHubServiceException
+	 * 
+	 *             API Doc: issues/close/:user/:repo/:number API POST Variables:
+	 *             login, api-token, title, body
+	 */
+	public GitHubIssue closeIssue(String user, String repo, GitHubIssue issue,
+			GitHubCredentials credentials) throws GitHubServiceException {
+		issue = editIssue(user, repo, issue, credentials);
+		return submitEdit(user, repo, CLOSE, issue, credentials);
+		
+	}
+	
+
+	private GitHubIssue submitEdit(final String user, final String repo,
+			String githubOperation, final GitHubIssue issue,
+			final GitHubCredentials credentials) throws GitHubServiceException {
+		PostMethod method = null;
+		try {
+			
+			// Create the HTTP POST method
+			method = new PostMethod(gitURLBase + gitIssueRoot + githubOperation + user
+					+ "/" + repo + "/" + issue.getNumber());
+			// Set the users login and API token
+			final NameValuePair login = new NameValuePair("login", credentials.getUsername());
+			final NameValuePair token = new NameValuePair("token", credentials.getApiToken());
+			
+			method.setRequestBody(new NameValuePair[] { login, token });
+
+			executeMethod(method);
+			GitHubShowIssue showIssue = gson.fromJson(method.getResponseBodyAsString(),
+						GitHubShowIssue.class);
+				
+			// Make sure the changes were made properly
+			if (showIssue == null || showIssue.getIssue() == null) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("Unexpected server response: "+method.getResponseBodyAsString());
+				}
+				throw new GitHubServiceException("Unexpected server response");
+			}
+
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Response: " + method.getResponseBodyAsString());
+				LOG.debug("URL: " + method.getURI());
+			}
+			return showIssue.getIssue();
+		} catch (final RuntimeException runTimeException) {
+			throw runTimeException;
+		} catch (final Exception e) {
+			throw new GitHubServiceException(e);
+		} finally {
+			if (method != null) {
+				method.releaseConnection();
 			}
 		}
 	}

@@ -17,6 +17,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
+import org.eclipse.mylyn.tasks.core.data.TaskOperation;
 
 /**
  * 
@@ -54,6 +55,8 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 				issue.getNumber());
 		data.setVersion(DATA_VERSION);
 		
+		createOperations(data,issue);
+		
 		createAttribute(data, GitHubTaskAttributes.KEY,issue.getNumber());
 		createAttribute(data, GitHubTaskAttributes.TITLE, issue.getTitle());
 		createAttribute(data, GitHubTaskAttributes.BODY, issue.getBody());
@@ -68,6 +71,38 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	}
 	
 	
+	private void createOperations(TaskData data, GitHubIssue issue) {
+		TaskAttribute operationAttribute = data.getRoot().createAttribute(TaskAttribute.OPERATION);
+		operationAttribute.getMetaData().setType(TaskAttribute.TYPE_OPERATION);
+		
+		if (!data.isNew()) {
+			if (issue.getState() != null) {
+				addOperation(data,issue,GitHubTaskOperation.LEAVE,true);
+				if (issue.getState().equals("open")) {
+					addOperation(data,issue,GitHubTaskOperation.CLOSE,false);
+				} else if (issue.getState().equals("closed")) {
+					addOperation(data,issue,GitHubTaskOperation.REOPEN,false);
+				}
+			}
+		}
+	}
+
+	private void addOperation(TaskData data, GitHubIssue issue, GitHubTaskOperation operation,boolean asDefault) {
+		TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_OPERATION + operation.getId());
+		String label = createOperationLabel(issue, operation);
+		TaskOperation.applyTo(attribute, operation.getId(), label);
+		
+		if (asDefault) {
+			TaskAttribute operationAttribute = data.getRoot().getAttribute(TaskAttribute.OPERATION);
+			TaskOperation.applyTo(operationAttribute, operation.getId(), label);
+		}
+	}
+
+	private String createOperationLabel(GitHubIssue issue,
+			GitHubTaskOperation operation) {
+		return operation==GitHubTaskOperation.LEAVE?operation.getLabel()+issue.getState():operation.getLabel();
+	}
+
 	private String toLocalDate(String date) {
 		if (date != null && date.trim().length() > 0) {
 			// expect "2010/02/02 22:58:39 -0800"
@@ -164,11 +199,37 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		String user = connector.computeTaskRepositoryUser(repository);
 		String repo = connector.computeTaskRepositoryProject(repository);
 		try {
+			
 			GitHubService service = connector.getService();
+			GitHubCredentials credentials = GitHubCredentials.create(repository);
 			if (taskData.isNew()) {
-				issue = service.openIssue(user , repo, issue, GitHubCredentials.create(repository));
+				issue = service.openIssue(user , repo, issue, credentials);
 			} else {
-				service.editIssue(user , repo, issue, GitHubCredentials.create(repository));
+				TaskAttribute operationAttribute = taskData.getRoot().getAttribute(TaskAttribute.OPERATION);
+				
+				GitHubTaskOperation operation = null;
+				
+				
+				if (operationAttribute != null) {
+					String opId = operationAttribute.getValue();
+					operation = GitHubTaskOperation.fromId(opId);
+					
+				}
+				if (operation != null && operation != GitHubTaskOperation.LEAVE) {
+					service.editIssue(user , repo, issue, credentials);
+					switch (operation) {
+					case REOPEN:
+						service.reopenIssue(user,repo,issue,credentials);
+						break;
+					case CLOSE:
+						service.closeIssue(user,repo,issue,credentials);
+						break;
+					default:
+						throw new IllegalStateException("not implemented: "+operation);
+					}
+				} else {
+					service.editIssue(user , repo, issue, credentials);
+				}
 			}
 			return new RepositoryResponse(taskData.isNew()?ResponseKind.TASK_CREATED:ResponseKind.TASK_UPDATED,issue.getNumber());
 		} catch (GitHubServiceException e) {
