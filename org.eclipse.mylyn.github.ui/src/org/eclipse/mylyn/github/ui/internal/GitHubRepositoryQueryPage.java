@@ -20,8 +20,6 @@ import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositoryQueryPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -80,12 +78,6 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		gridLayout.verticalSpacing = 8;
 		gridLayout.horizontalSpacing = 8;
 		composite.setLayout(gridLayout);
-
-		ModifyListener modifyListener = new ModifyListener() {
-			public void modifyText(ModifyEvent modifyEvent) {
-				setPageComplete(isPageComplete());
-			}
-		};
 
 		
 		// create the status option combo box

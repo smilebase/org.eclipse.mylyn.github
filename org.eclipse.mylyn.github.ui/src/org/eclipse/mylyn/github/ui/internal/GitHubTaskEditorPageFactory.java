@@ -18,7 +18,6 @@ package org.eclipse.mylyn.github.ui.internal;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.mylyn.github.internal.GitHub;
-import org.eclipse.mylyn.github.internal.GitHubRepositoryConnector;
 import org.eclipse.mylyn.tasks.ui.ITasksUiConstants;
 import org.eclipse.mylyn.tasks.ui.TasksUiUtil;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPageFactory;
