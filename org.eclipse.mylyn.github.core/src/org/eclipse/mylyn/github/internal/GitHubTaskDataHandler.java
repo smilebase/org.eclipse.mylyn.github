@@ -121,12 +121,12 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	
 	private String getAttributeValue(TaskData taskData,
 			GitHubTaskAttributes attr) {
-		TaskAttribute attribute = taskData.getRoot().getAttribute(attr.name());
+		TaskAttribute attribute = taskData.getRoot().getAttribute(attr.getId());
 		return attribute==null?null:attribute.getValue();
 	}
 
 	private void createAttribute(TaskData data, GitHubTaskAttributes attribute, String value) {
-		TaskAttribute attr = data.getRoot().createAttribute(attribute.name());
+		TaskAttribute attr = data.getRoot().createAttribute(attribute.getId());
 		TaskAttributeMetaData metaData = attr.getMetaData();
 		metaData.defaults()
 			.setType(attribute.getType())

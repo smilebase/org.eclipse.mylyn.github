@@ -16,15 +16,15 @@ public enum GitHubTaskAttributes {
 	;
 	
 
+	private String id;
 	private String label;
-	private String commonKey;
 	private boolean readOnly;
 	private boolean initTask;
 	private final String type;
 	
-	private GitHubTaskAttributes(String label, String commonKey,String type, boolean readOnly, boolean initTask) {
+	private GitHubTaskAttributes(String label, String id,String type, boolean readOnly, boolean initTask) {
 		this.label = label;
-		this.commonKey = commonKey;
+		this.id = id==null?"github."+name():id;
 		this.type = type;
 		this.readOnly = readOnly;
 		this.initTask = initTask;
@@ -33,8 +33,8 @@ public enum GitHubTaskAttributes {
 	public String getLabel() {
 		return label;
 	}
-	public String getCommonKey() {
-		return commonKey;
+	public String getId() {
+		return id;
 	}
 	public String getType() {
 		return type;
