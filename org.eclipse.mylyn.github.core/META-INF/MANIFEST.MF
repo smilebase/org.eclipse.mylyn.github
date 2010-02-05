@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mylyn GitHub Core Plug-in
 Bundle-SymbolicName: org.eclipse.mylyn.github.core
-Bundle-Version: 0.1.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Christian Trutz
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: .,
@@ -29,7 +29,6 @@ Export-Package: com.google.gson;x-friends:="org.eclipse.mylyn.github.tests",
  org.apache.commons.logging;x-friends:="org.eclipse.mylyn.github.tests",
  org.apache.commons.logging.impl;x-friends:="org.eclipse.mylyn.github.tests",
  org.eclipse.mylyn.github.internal;x-friends:="org.eclipse.mylyn.github.ui"
-Require-Bundle: org.junit4;bundle-version="4.5.0",
- org.eclipse.core.runtime;bundle-version="3.5.0",
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.5.0",
  org.eclipse.mylyn.tasks.core;bundle-version="3.3.0",
  org.eclipse.mylyn.commons.net;bundle-version="3.3.0"
