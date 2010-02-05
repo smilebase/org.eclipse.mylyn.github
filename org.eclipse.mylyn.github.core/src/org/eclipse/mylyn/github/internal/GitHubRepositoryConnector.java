@@ -22,10 +22,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.mylyn.github.GitHubIssue;
-import org.eclipse.mylyn.github.GitHubIssues;
-import org.eclipse.mylyn.github.GitHubService;
-import org.eclipse.mylyn.github.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.AbstractRepositoryConnector;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.ITask;
@@ -141,7 +137,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		return result;
 	}
 
-	private String computeTaskRepositoryProject(TaskRepository repository) {
+	String computeTaskRepositoryProject(TaskRepository repository) {
 		Matcher matcher = GitHub.URL_PATTERN.matcher(repository.getUrl());
 		if (matcher.matches()) {
 			return matcher.group(2);
@@ -149,7 +145,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		return null;
 	}
 
-	private String computeTaskRepositoryUser(TaskRepository repository) {
+	String computeTaskRepositoryUser(TaskRepository repository) {
 		Matcher matcher = GitHub.URL_PATTERN.matcher(repository.getUrl());
 		if (matcher.matches()) {
 			return matcher.group(1);
@@ -212,4 +208,7 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		new TaskMapper(taskData).applyTo(task);
 	}
 
+	public GitHubService getService() {
+		return service;
+	}
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  *  
  */
-package org.eclipse.mylyn.github;
+package org.eclipse.mylyn.github.internal;
 
 /**
  * Container of multiple GitHub Issues, used when returning JSON objects

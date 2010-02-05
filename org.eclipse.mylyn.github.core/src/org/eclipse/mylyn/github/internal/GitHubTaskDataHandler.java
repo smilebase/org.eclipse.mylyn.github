@@ -4,11 +4,11 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.mylyn.github.GitHubIssue;
-import org.eclipse.mylyn.github.GitHubTaskAttributes;
+import org.eclipse.mylyn.commons.net.AuthenticationType;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
+import org.eclipse.mylyn.tasks.core.RepositoryResponse.ResponseKind;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
@@ -57,6 +57,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		return data;
 	}
 	
+	
 	public TaskData createTaskData(TaskRepository repository,
 			IProgressMonitor monitor, String user, String project,
 			GitHubIssue issue) {
@@ -65,7 +66,23 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		
 		return taskData;
 	}
+
+	private GitHubIssue createIssue(TaskData taskData) {
+		GitHubIssue issue = new GitHubIssue();
+		if (!taskData.isNew()) {
+			issue.setNumber(taskData.getTaskId());
+		}
+		issue.setBody(getAttributeValue(taskData,GitHubTaskAttributes.BODY));
+		issue.setTitle(getAttributeValue(taskData,GitHubTaskAttributes.TITLE));
+		return issue;
+	}
 	
+	private String getAttributeValue(TaskData taskData,
+			GitHubTaskAttributes attr) {
+		TaskAttribute attribute = taskData.getRoot().getAttribute(attr.name());
+		return attribute==null?null:attribute.getValue();
+	}
+
 	private void createAttribute(TaskData data, GitHubTaskAttributes attribute, String value) {
 		TaskAttribute attr = data.getRoot().createAttribute(attribute.name());
 		TaskAttributeMetaData metaData = attr.getMetaData();
@@ -101,9 +118,22 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			TaskData taskData, Set<TaskAttribute> oldAttributes,
 			IProgressMonitor monitor) throws CoreException {
 		
-		// FIXME support saving here
+		GitHubIssue issue = createIssue(taskData);
+		String user = connector.computeTaskRepositoryUser(repository);
+		String repo = connector.computeTaskRepositoryProject(repository);
+		try {
+			GitHubService service = connector.getService();
+			if (taskData.isNew()) {
+				issue = service.openIssue(user , repo, issue, GitHubCredentials.create(repository));
+			} else {
+				service.editIssue(user , repo, issue, GitHubCredentials.create(repository));
+			}
+			return new RepositoryResponse(taskData.isNew()?ResponseKind.TASK_CREATED:ResponseKind.TASK_UPDATED,issue.getNumber());
+		} catch (GitHubServiceException e) {
+			throw new CoreException(GitHub.createErrorStatus(e));
+		}
 		
-		return null;
 	}
+
 
 }

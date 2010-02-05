@@ -1,4 +1,4 @@
-package org.eclipse.mylyn.github;
+package org.eclipse.mylyn.github.internal;
 
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 

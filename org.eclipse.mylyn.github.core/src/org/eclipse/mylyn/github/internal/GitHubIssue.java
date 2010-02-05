@@ -14,7 +14,7 @@
  * limitations under the License.
  *  
  */
-package org.eclipse.mylyn.github;
+package org.eclipse.mylyn.github.internal;
 
 /**
  * GitHub Issue object to hold all the properties of an individual issue.

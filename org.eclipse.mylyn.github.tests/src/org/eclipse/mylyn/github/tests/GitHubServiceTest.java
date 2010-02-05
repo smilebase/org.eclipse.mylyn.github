@@ -14,19 +14,23 @@
  * limitations under the License.
  *  
  */
-package org.eclipse.mylyn.github.internal;
+package org.eclipse.mylyn.github.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.mylyn.github.GitHubIssue;
-import org.eclipse.mylyn.github.GitHubIssues;
-import org.eclipse.mylyn.github.GitHubService;
+import org.eclipse.mylyn.github.internal.GitHubCredentials;
+import org.eclipse.mylyn.github.internal.GitHubIssue;
+import org.eclipse.mylyn.github.internal.GitHubIssues;
+import org.eclipse.mylyn.github.internal.GitHubService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Run All the JUnit Tests for the GitHub API implementation
  */
+@RunWith(JUnit4.class)
 public class GitHubServiceTest {
 
 	// GitHub API key for user "eclipse-github-plugin"
@@ -41,6 +45,7 @@ public class GitHubServiceTest {
 	/**
 	 * Test the GitHubService issue searching implementation
 	 */
+	@SuppressWarnings("restriction")
 	@Test
 	public void searchIssues() throws Exception {
 		final GitHubService service = new GitHubService();
@@ -59,11 +64,41 @@ public class GitHubServiceTest {
 		issue.setUser(TEST_USER);
 		issue.setBody("This is a test body");
 		issue.setTitle("Issue Title");
-		boolean result = service.openIssue(TEST_USER, TEST_PROJECT, issue,
-				API_KEY);
-		assertTrue(result);
+		GitHubIssue newIssue = service.openIssue(TEST_USER, TEST_PROJECT, issue,
+				new GitHubCredentials(TEST_USER,API_KEY));
+		assertTrue(newIssue != null);
+		assertEquals(issue.getUser(),newIssue.getUser());
+		assertEquals(issue.getBody(),newIssue.getBody());
+		assertEquals(issue.getTitle(),newIssue.getTitle());
+		assertTrue(newIssue.getNumber() != null && newIssue.getNumber().length() > 0);
+	}
+	/**
+	 * Test the GitHubService implementation for opening a new issue.
+	 */
+	@Test
+	public void editIssue() throws Exception {
+		final GitHubService service = new GitHubService();
+		final GitHubIssue issue = new GitHubIssue();
+		issue.setUser(TEST_USER);
+		issue.setBody("This is a test body");
+		issue.setTitle("Issue Title");
+		GitHubIssue newIssue = service.openIssue(TEST_USER, TEST_PROJECT, issue,
+				new GitHubCredentials(TEST_USER,API_KEY));
+		assertTrue(newIssue != null);
+		
+		newIssue.setTitle(newIssue.getTitle()+" - modified");
+		newIssue.setBody(newIssue.getBody()+" - modified");
+		
+		service.editIssue(TEST_USER, TEST_PROJECT, issue, new GitHubCredentials(TEST_USER,API_KEY));
+		
+		GitHubIssue showIssue = service.showIssue(TEST_USER, TEST_PROJECT, issue.getNumber());
+		
+		assertTrue(showIssue != null);
+		assertEquals(newIssue.getTitle(),showIssue.getTitle());
 	}
 
+	
+	
 	/**
 	 * Test the GitHubService implementation for adding a label to an existing
 	 * issue.
@@ -72,7 +107,7 @@ public class GitHubServiceTest {
 	public void addLabel() throws Exception {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.addLabel(TEST_USER, TEST_PROJECT,
-				"lame", 1, API_KEY);
+				"lame", 1, new GitHubCredentials(TEST_USER,API_KEY));
 		assertTrue(result);
 	}
 
@@ -84,7 +119,7 @@ public class GitHubServiceTest {
 	public void removeLable() throws Exception {
 		final GitHubService service = new GitHubService();
 		final boolean result = service.removeLabel(TEST_USER, TEST_PROJECT,
-				"lame", 1, API_KEY);
+				"lame", 1, new GitHubCredentials(TEST_USER,API_KEY));
 		assertTrue(result);
 	}
 }

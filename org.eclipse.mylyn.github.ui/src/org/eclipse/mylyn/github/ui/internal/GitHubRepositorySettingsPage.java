@@ -23,11 +23,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.mylyn.github.GitHubService;
-import org.eclipse.mylyn.github.GitHubServiceException;
 import org.eclipse.mylyn.github.internal.GitHub;
+import org.eclipse.mylyn.github.internal.GitHubService;
+import org.eclipse.mylyn.github.internal.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -67,8 +68,12 @@ public class GitHubRepositorySettingsPage extends
 	@Override
 	protected void createAdditionalControls(Composite parent) {
 		// Set the URL now, because serverURL is definitely instantiated .
-		if (serverUrlCombo != null) {
-			serverUrlCombo.setText(URL);
+		if (serverUrlCombo != null && (serverUrlCombo.getText() == null || serverUrlCombo.getText().trim().length() == 0)) {
+			String fullUrlText = URL+"/user/project";
+			serverUrlCombo.setText(fullUrlText);
+			// select the user/project part of the URL so that the user can just start
+			// typing to replace the text.
+			serverUrlCombo.setSelection(new Point(URL.length()+1,fullUrlText.length()));
 		}
 
 		// Specify that you need the GitHub User Name

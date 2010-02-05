@@ -3,7 +3,6 @@ package org.eclipse.mylyn.github.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.mylyn.github.GitHubTaskAttributes;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
