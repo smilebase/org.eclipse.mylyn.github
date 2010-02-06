@@ -57,6 +57,7 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		
 		createOperations(data,issue);
 		
+		
 		createAttribute(data, GitHubTaskAttributes.KEY,issue.getNumber());
 		createAttribute(data, GitHubTaskAttributes.TITLE, issue.getTitle());
 		createAttribute(data, GitHubTaskAttributes.BODY, issue.getBody());
