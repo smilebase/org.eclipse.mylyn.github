@@ -66,12 +66,26 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		createAttribute(data, GitHubTaskAttributes.MODIFICATION_DATE, toLocalDate(issue.getCreated_at()));
 		createAttribute(data, GitHubTaskAttributes.CLOSED_DATE, toLocalDate(issue.getClosed_at()));
 		
-		data.setPartial(true);
+		if (isPartial(data)) {
+			data.setPartial(true);
+		}
 
 		return data;
 	}
 	
 	
+	private boolean isPartial(TaskData data) {
+		for (GitHubTaskAttributes attribute: GitHubTaskAttributes.values()) {
+			if (attribute.isRequiredForFullTaskData()) {
+				TaskAttribute taskAttribute = data.getRoot().getAttribute(attribute.getId());
+				if (taskAttribute == null) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private void createOperations(TaskData data, GitHubIssue issue) {
 		TaskAttribute operationAttribute = data.getRoot().createAttribute(TaskAttribute.OPERATION);
 		operationAttribute.getMetaData().setType(TaskAttribute.TYPE_OPERATION);
