@@ -61,11 +61,10 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		String statusString = status.getText();
 		String queryString = queryText.getText();
 		
-		TaskRepository taskRepository = getTaskRepository();
-		
 		String summary = statusString;
+		summary += " issues";
 		if (queryString!=null && queryString.trim().length() > 0) {
-			summary += ":"+queryString;
+			summary += " matching "+queryString;
 		}
 		query.setSummary(summary);
 		query.setAttribute("status", statusString);
