@@ -35,6 +35,10 @@ import org.eclipse.swt.widgets.Text;
  */
 public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 
+	private static final String ATTR_QUERY_TEXT = "queryText";
+
+	private static final String ATTR_STATUS = "status";
+
 	private Text queryText = null;
 
 	private Combo status = null;
@@ -67,8 +71,8 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 			summary += " matching "+queryString;
 		}
 		query.setSummary(summary);
-		query.setAttribute("status", statusString);
-		query.setAttribute("queryText", queryString);
+		query.setAttribute(ATTR_STATUS, statusString);
+		query.setAttribute(ATTR_QUERY_TEXT, queryString);
 	}
 
 	/**
@@ -88,8 +92,18 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		// create the status option combo box
 		new Label(composite, SWT.NONE).setText("Status:");
 		status = new Combo(composite, SWT.READ_ONLY);
-		status.setItems(new String[] { "open", "closed" });
-		status.setText("open");
+		String[] queryValues = new String[] { "all", "open", "closed" };
+		status.setItems(queryValues);
+		status.select(0);
+		String queryModelStatus = getQuery().getAttribute(ATTR_STATUS);
+		if (queryModelStatus != null) {
+			for (int x = 0;x<queryValues.length;++x) {
+				if (queryValues[x].equals(queryModelStatus)) {
+					status.select(x);
+					break;
+				}
+			}
+		}
 
 		// create the query entry box
 		new Label(composite, SWT.NONE).setText("Query text:");
@@ -97,6 +111,8 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		GridData gridData = new GridData();
 		gridData.widthHint = 250;
 		queryText.setLayoutData(gridData);
+		String queryModelText = getQuery().getAttribute(ATTR_QUERY_TEXT);
+		queryText.setText(queryModelText==null?"":queryModelText);
 
 		setControl(composite);
 	}

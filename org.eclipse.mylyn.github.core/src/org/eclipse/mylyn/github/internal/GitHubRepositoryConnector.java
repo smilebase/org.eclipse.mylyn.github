@@ -111,21 +111,34 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 			ISynchronizationSession session, IProgressMonitor monitor) {
 
 		IStatus result = Status.OK_STATUS;
-		monitor.beginTask("Querying repository ...", IProgressMonitor.UNKNOWN);
+		String queryStatus = query.getAttribute("status");
+		
+		String[] statuses;
+		if (queryStatus.equals("all")) {
+			statuses = new String[] {"open","closed"};
+		} else {
+			statuses = new String[] { queryStatus };
+		}
+		
+		monitor.beginTask("Querying repository ...", statuses.length);
 		try {
 			String user = computeTaskRepositoryUser(repository);
 			String project = computeTaskRepositoryProject(repository);
 			
 			// perform query
-			GitHubIssues issues = service.searchIssues(user,project,
-					query.getAttribute("status"), query
-							.getAttribute("queryText"));
-
-			// collect task data
-			for (GitHubIssue issue : issues.getIssues()) {
-				TaskData taskData = taskDataHandler.createPartialTaskData(
-						repository, monitor,user, project, issue);
-				collector.accept(taskData);
+			
+			for (String status: statuses) {
+				GitHubIssues issues = service.searchIssues(user,project,
+						status, query
+								.getAttribute("queryText"));
+	
+				// collect task data
+				for (GitHubIssue issue : issues.getIssues()) {
+					TaskData taskData = taskDataHandler.createPartialTaskData(
+							repository, monitor,user, project, issue);
+					collector.accept(taskData);
+				}
+				monitor.worked(1);
 			}
 
 			result = Status.OK_STATUS;
