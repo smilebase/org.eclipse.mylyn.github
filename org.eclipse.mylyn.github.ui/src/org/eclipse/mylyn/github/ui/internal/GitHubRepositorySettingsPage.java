@@ -17,13 +17,18 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import java.util.regex.Matcher;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.mylyn.github.GitHubService;
-import org.eclipse.mylyn.github.GitHubServiceException;
+import org.eclipse.mylyn.github.internal.GitHub;
+import org.eclipse.mylyn.github.internal.GitHubService;
+import org.eclipse.mylyn.github.internal.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 
 /**
@@ -36,11 +41,9 @@ import org.eclipse.swt.widgets.Composite;
 public class GitHubRepositorySettingsPage extends
 		AbstractRepositorySettingsPage {
 
-	private static final String URL = "http://www.github.org";
+	static final String URL = "http://www.github.org";
 
 	private static final String PASS_LABEL_TEXT = "GitHub API Key";
-
-	private static final String PROJECT_LABEL_TEXT = "GitHub Project";
 
 	/**
 	 * Populate taskRepository with repository settings.
@@ -59,19 +62,18 @@ public class GitHubRepositorySettingsPage extends
 
 	@Override
 	public String getConnectorKind() {
-		return GitHubRepositoryConnector.KIND;
+		return GitHub.CONNECTOR_KIND;
 	}
 
 	@Override
 	protected void createAdditionalControls(Composite parent) {
 		// Set the URL now, because serverURL is definitely instantiated .
-		if (serverUrlCombo != null) {
-			serverUrlCombo.setText(URL);
-			serverUrlCombo.setEnabled(false);
-		}
-
-		if (repositoryLabelEditor != null) {
-			repositoryLabelEditor.setLabelText(PROJECT_LABEL_TEXT);
+		if (serverUrlCombo != null && (serverUrlCombo.getText() == null || serverUrlCombo.getText().trim().length() == 0)) {
+			String fullUrlText = URL+"/user/project";
+			serverUrlCombo.setText(fullUrlText);
+			// select the user/project part of the URL so that the user can just start
+			// typing to replace the text.
+			serverUrlCombo.setSelection(new Point(URL.length()+1,fullUrlText.length()));
 		}
 
 		// Specify that you need the GitHub User Name
@@ -92,11 +94,18 @@ public class GitHubRepositorySettingsPage extends
 			@Override
 			public void run(IProgressMonitor monitor) throws CoreException {
 				monitor.worked(25);
+				
+				String urlText = repository.getUrl();
+				Matcher urlMatcher = GitHub.URL_PATTERN.matcher(urlText==null?"":urlText);
+				if (!urlMatcher.matches()) {
+					setStatus(GitHubUi.createErrorStatus("Server URL must be in the form http://www.github.org/user/project"));
+					monitor.done();
+					return;
+				}
+				String user = urlMatcher.group(1);
+				String repo = urlMatcher.group(2);
+				
 				monitor.beginTask("Starting..", 25);
-				String user = repository.getUserName();
-				// String url = repository.getRepositoryUrl();
-				// String repo = repository.getRepositoryLabel();
-				String repo = new String("test");
 
 				GitHubService service = new GitHubService();
 
@@ -108,14 +117,15 @@ public class GitHubRepositorySettingsPage extends
 				} catch (GitHubServiceException e) {
 					String msg = new String("Repository Test failed:"
 							+ e.getMessage());
-					Status stat = new Status(Status.ERROR,
-							GitHubRepositoryConnector.KIND, msg);
-					this.setStatus(stat);
+					this.setStatus(GitHubUi.createErrorStatus(msg));
 					monitor.done();
 					return;
 				}
-				Status stat = new Status(Status.OK,
-						GitHubRepositoryConnector.KIND, "Success!");
+				
+				// FIXME username/API key test
+				
+				Status stat = new Status(IStatus.OK,
+						GitHubUi.BUNDLE_ID, "Success!");
 				this.setStatus(stat);
 				monitor.done();
 			}

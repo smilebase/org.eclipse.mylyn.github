@@ -17,6 +17,7 @@
 package org.eclipse.mylyn.github.ui.internal;
 
 import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.mylyn.github.internal.GitHub;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
@@ -41,7 +42,7 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 	 */
 	@Override
 	public String getConnectorKind() {
-		return GitHubRepositoryConnector.KIND;
+		return GitHub.CONNECTOR_KIND;
 	}
 
 	/**

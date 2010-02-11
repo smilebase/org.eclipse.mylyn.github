@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.mylyn.tasks.ui.repositories">
       <connectorCore
-            class="org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnector"
+            class="org.eclipse.mylyn.github.internal.GitHubRepositoryConnector"
             id="org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnector"
             name="%org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnector">
       </connectorCore>

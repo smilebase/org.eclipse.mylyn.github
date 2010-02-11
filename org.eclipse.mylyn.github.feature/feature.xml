@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.mylyn.github.feature"
       label="Mylyn GitHub Feature"
-      version="0.1.0.qualifier"
+      version="0.2.0.qualifier"
       provider-name="Christian Trutz">
 
    <description url="http://github.com/smilebase/org.eclipse.mylyn.github">

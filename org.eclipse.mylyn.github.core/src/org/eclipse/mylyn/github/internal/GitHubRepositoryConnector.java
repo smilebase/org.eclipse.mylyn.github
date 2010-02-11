@@ -14,16 +14,15 @@
  * limitations under the License.
  *  
  */
-package org.eclipse.mylyn.github.ui.internal;
+package org.eclipse.mylyn.github.internal;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.mylyn.github.GitHubIssue;
-import org.eclipse.mylyn.github.GitHubIssues;
-import org.eclipse.mylyn.github.GitHubService;
-import org.eclipse.mylyn.github.GitHubServiceException;
 import org.eclipse.mylyn.tasks.core.AbstractRepositoryConnector;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.ITask;
@@ -41,10 +40,11 @@ import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
  */
 public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 
+
 	/**
 	 * GitHub kind.
 	 */
-	protected static final String KIND = "github";
+	protected static final String KIND = GitHub.CONNECTOR_KIND;
 
 	/**
 	 * GitHub service which creates, lists, deletes, etc. GitHub tasks.
@@ -54,8 +54,12 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	/**
 	 * GitHub specific {@link AbstractTaskDataHandler}.
 	 */
-	private final GitHubTaskDataHandler taskDataHandler = new GitHubTaskDataHandler();
+	private final GitHubTaskDataHandler taskDataHandler;
 
+	public GitHubRepositoryConnector() {
+		taskDataHandler = new GitHubTaskDataHandler(this);
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -108,56 +112,112 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 			ISynchronizationSession session, IProgressMonitor monitor) {
 
 		IStatus result = Status.OK_STATUS;
-		monitor.beginTask("Querying repository ...", IProgressMonitor.UNKNOWN);
+		String queryStatus = query.getAttribute("status");
+		
+		String[] statuses;
+		if (queryStatus.equals("all")) {
+			statuses = new String[] {"open","closed"};
+		} else {
+			statuses = new String[] { queryStatus };
+		}
+		
+		monitor.beginTask("Querying repository ...", statuses.length);
 		try {
-
+			String user = computeTaskRepositoryUser(repository);
+			String project = computeTaskRepositoryProject(repository);
+			
 			// perform query
-			GitHubIssues issues = service.searchIssues(query
-					.getAttribute("owner"), query.getAttribute("project"),
-					query.getAttribute("status"), query
-							.getAttribute("queryText"));
-
-			// collect task data
-			for (GitHubIssue issue : issues.getIssues()) {
-				TaskData taskData = taskDataHandler.createPartialTaskData(
-						repository, monitor, issue);
-				collector.accept(taskData);
+			
+			for (String status: statuses) {
+				GitHubIssues issues = service.searchIssues(user,project,
+						status, query
+								.getAttribute("queryText"));
+	
+				// collect task data
+				for (GitHubIssue issue : issues.getIssues()) {
+					TaskData taskData = taskDataHandler.createPartialTaskData(
+							repository, monitor,user, project, issue);
+					collector.accept(taskData);
+				}
+				monitor.worked(1);
 			}
 
 			result = Status.OK_STATUS;
-		} catch (GitHubServiceException gitHubServiceException) {
-			// TODO inform user about this
-			result = Status.CANCEL_STATUS;
+		} catch (GitHubServiceException e) {
+			result = GitHub.createErrorStatus(e);
 		}
 
 		monitor.done();
 		return result;
 	}
 
-	@Override
-	public TaskData getTaskData(TaskRepository repo, String taskId,
-			IProgressMonitor monitor) throws CoreException {
+	String computeTaskRepositoryProject(TaskRepository repository) {
+		return computeTaskRepositoryProject(repository.getUrl());
+	}
 
-		String kind = repo.getConnectorKind();
-		String url = repo.getRepositoryUrl();
+	private String computeTaskRepositoryProject(String repositoryUrl) {
+		Matcher matcher = GitHub.URL_PATTERN.matcher(repositoryUrl);
+		if (matcher.matches()) {
+			return matcher.group(2);
+		}
+		return null;
+	}
 
-		return new TaskData(taskDataHandler.getAttributeMapper(repo), kind,
-				url, taskId);
+	String computeTaskRepositoryUser(TaskRepository repository) {
+		return computeTaskRepositoryUser(repository.getUrl());
+	}
+
+	private String computeTaskRepositoryUser(String repositoryUrl) {
+		Matcher matcher = GitHub.URL_PATTERN.matcher(repositoryUrl);
+		if (matcher.matches()) {
+			return matcher.group(1);
+		}
+		return null;
 	}
 
 	@Override
+	public TaskData getTaskData(TaskRepository repository, String taskId,
+			IProgressMonitor monitor) throws CoreException {
+
+		String user = computeTaskRepositoryUser(repository);
+		String project = computeTaskRepositoryProject(repository);
+		
+		try {
+			GitHubIssue issue = service.showIssue(user, project, taskId);
+			TaskData taskData = taskDataHandler.createTaskData(repository, monitor, user, project, issue);
+			
+			return taskData;
+		} catch (GitHubServiceException e) {
+			throw new CoreException(GitHub.createErrorStatus(e));
+		}
+	}
+
+
+	@Override
 	public String getRepositoryUrlFromTaskUrl(String taskFullUrl) {
+		if (taskFullUrl != null) {
+			Matcher matcher = Pattern.compile("(http://.+?)/issues/issue/([^/]+)").matcher(taskFullUrl);
+			if (matcher.matches()) {
+				return matcher.group(1);
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public String getTaskIdFromTaskUrl(String taskFullUrl) {
+		if (taskFullUrl != null) {
+			Matcher matcher = Pattern.compile(".+?/issues/issue/([^/]+)").matcher(taskFullUrl);
+			if (matcher.matches()) {
+				return matcher.group(1);
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public String getTaskUrl(String repositoryUrl, String taskId) {
-		return null;
+		return repositoryUrl+"/issues/issue/"+taskId;
 	}
 
 	@Override
@@ -174,7 +234,13 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 	@Override
 	public void updateTaskFromTaskData(TaskRepository taskRepository,
 			ITask task, TaskData taskData) {
+		if (!taskData.isNew()) {
+			task.setUrl(getTaskUrl(taskRepository.getUrl(), taskData.getTaskId()));
+		}
 		new TaskMapper(taskData).applyTo(task);
 	}
 
+	public GitHubService getService() {
+		return service;
+	}
 }
