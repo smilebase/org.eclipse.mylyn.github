@@ -95,7 +95,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		String[] queryValues = new String[] { "all", "open", "closed" };
 		status.setItems(queryValues);
 		status.select(0);
-		String queryModelStatus = getQuery().getAttribute(ATTR_STATUS);
+		String queryModelStatus =  getQuery()==null?null:getQuery().getAttribute(ATTR_STATUS);
 		if (queryModelStatus != null) {
 			for (int x = 0;x<queryValues.length;++x) {
 				if (queryValues[x].equals(queryModelStatus)) {
@@ -111,7 +111,7 @@ public class GitHubRepositoryQueryPage extends AbstractRepositoryQueryPage {
 		GridData gridData = new GridData();
 		gridData.widthHint = 250;
 		queryText.setLayoutData(gridData);
-		String queryModelText = getQuery().getAttribute(ATTR_QUERY_TEXT);
+		String queryModelText = getQuery()==null?null:getQuery().getAttribute(ATTR_QUERY_TEXT);
 		queryText.setText(queryModelText==null?"":queryModelText);
 
 		setControl(composite);
