@@ -211,8 +211,8 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 			IProgressMonitor monitor) throws CoreException {
 		
 		GitHubIssue issue = createIssue(taskData);
-		String user = connector.computeTaskRepositoryUser(repository);
-		String repo = connector.computeTaskRepositoryProject(repository);
+		String user = GitHub.computeTaskRepositoryUser(repository.getUrl());
+		String repo = GitHub.computeTaskRepositoryProject(repository.getUrl());
 		try {
 			
 			GitHubService service = connector.getService();

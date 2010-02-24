@@ -123,8 +123,8 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		
 		monitor.beginTask("Querying repository ...", statuses.length);
 		try {
-			String user = computeTaskRepositoryUser(repository);
-			String project = computeTaskRepositoryProject(repository);
+			String user = GitHub.computeTaskRepositoryUser(repository.getUrl());
+			String project = GitHub.computeTaskRepositoryProject(repository.getUrl());
 			
 			// perform query
 			
@@ -151,36 +151,13 @@ public class GitHubRepositoryConnector extends AbstractRepositoryConnector {
 		return result;
 	}
 
-	String computeTaskRepositoryProject(TaskRepository repository) {
-		return computeTaskRepositoryProject(repository.getUrl());
-	}
-
-	private String computeTaskRepositoryProject(String repositoryUrl) {
-		Matcher matcher = GitHub.URL_PATTERN.matcher(repositoryUrl);
-		if (matcher.matches()) {
-			return matcher.group(2);
-		}
-		return null;
-	}
-
-	String computeTaskRepositoryUser(TaskRepository repository) {
-		return computeTaskRepositoryUser(repository.getUrl());
-	}
-
-	private String computeTaskRepositoryUser(String repositoryUrl) {
-		Matcher matcher = GitHub.URL_PATTERN.matcher(repositoryUrl);
-		if (matcher.matches()) {
-			return matcher.group(1);
-		}
-		return null;
-	}
 
 	@Override
 	public TaskData getTaskData(TaskRepository repository, String taskId,
 			IProgressMonitor monitor) throws CoreException {
 
-		String user = computeTaskRepositoryUser(repository);
-		String project = computeTaskRepositoryProject(repository);
+		String user = GitHub.computeTaskRepositoryUser(repository.getUrl());
+		String project = GitHub.computeTaskRepositoryProject(repository.getUrl());
 		
 		try {
 			GitHubIssue issue = service.showIssue(user, project, taskId);

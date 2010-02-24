@@ -1,5 +1,6 @@
 package org.eclipse.mylyn.github.internal;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.ILog;
@@ -46,5 +47,25 @@ public class GitHub {
 	
 	public static void logError(Throwable t) {
 		getLog().log(createErrorStatus(t.getMessage(), t));
+	}
+
+	public static String computeTaskRepositoryUser(String repositoryUrl) {
+		Matcher matcher = URL_PATTERN.matcher(repositoryUrl);
+		if (matcher.matches()) {
+			return matcher.group(1);
+		}
+		return null;
+	}
+
+	public static String computeTaskRepositoryProject(String repositoryUrl) {
+		Matcher matcher = URL_PATTERN.matcher(repositoryUrl);
+		if (matcher.matches()) {
+			return matcher.group(2);
+		}
+		return null;
+	}
+	
+	public static String createGitHubUrl(String user,String project) {
+		return HTTP_WWW_GITHUB_ORG+'/'+user+'/'+project;
 	}
 }

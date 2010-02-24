@@ -16,12 +16,22 @@
  */
 package org.eclipse.mylyn.github.ui.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.jface.text.hyperlink.URLHyperlink;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.mylyn.github.internal.GitHub;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.AbstractRepositoryConnectorUi;
+import org.eclipse.mylyn.tasks.ui.TaskHyperlink;
+import org.eclipse.mylyn.tasks.ui.TasksUi;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
 import org.eclipse.mylyn.tasks.ui.wizards.NewTaskWizard;
@@ -35,6 +45,8 @@ import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
  */
 public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 
+	private final Pattern issuePattern = Pattern.compile("(?:([a-zA-Z0-9_\\.-]+)(?:/([a-zA-Z0-9_\\.-]+))?)?\\#(\\d+)");
+	
 	/**
 	 * 
 	 * 
@@ -94,5 +106,45 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 		wizard.addPage(queryPage);
 		return wizard;
 	}
+	
+	
+	public IHyperlink[] findHyperlinks(TaskRepository repository, String text, int index, int textOffset) {
+		List<IHyperlink> hyperlinks = new ArrayList<IHyperlink>();
+		
+		Matcher matcher = issuePattern.matcher(text);
+		while (matcher.find()) {
+			if (index == -1 || (index >= matcher.start() && index <= matcher.end())) {
+				String user = matcher.group(1);
+				String project = matcher.group(2);
+				String taskId = matcher.group(3);
+				
+				if (project == null && user != null) {
+					// same project name, different user
+					String url = repository.getUrl();
+					project = GitHub.computeTaskRepositoryProject(url);
+				}
+				
+				TaskRepository taskRepository = null;
+				if (user == null && project == null) { 
+					taskRepository = repository;
+				} else if (user != null && project != null) {
+					String repositoryUrl = GitHub.createGitHubUrl(user,project);
+					taskRepository = TasksUi.getRepositoryManager().getRepository(GitHub.CONNECTOR_KIND, repositoryUrl);
+				}
+				if (taskRepository != null) {
+					Region region = createRegion(textOffset, matcher);
+					hyperlinks.add(new TaskHyperlink(region, repository, taskId));
+				} else if (user != null && project != null) {
+					Region region = createRegion(textOffset, matcher);
+					String url = GitHub.createGitHubUrl(user, project)+"/issues/issue/"+taskId;
+					hyperlinks.add(new URLHyperlink(region, url));
+				}
+			}
+		}
+		return hyperlinks.toArray(new IHyperlink[hyperlinks.size()]);
+	}
 
+	private Region createRegion(int textOffset, Matcher matcher) {
+		return new Region(matcher.start()+textOffset,matcher.end()-matcher.start());
+	}
 }
