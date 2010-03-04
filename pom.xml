@@ -25,6 +25,7 @@
         <module>org.eclipse.mylyn.github.core</module>
         <module>org.eclipse.mylyn.github.ui</module>
         <module>org.eclipse.mylyn.github.feature</module>
+        <module>org.eclipse.mylyn.github_site</module>
     </modules>
 
     <repositories>
