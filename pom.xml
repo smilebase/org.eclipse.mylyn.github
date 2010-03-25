@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <version>0.1.0-SNAPSHOT</version>
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
+    <groupId>org.eclipse.mylyn.github</groupId>
+    <artifactId>github-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Eclipse Mylyn to GitHub connector (parent)</name>
+
+    <properties>
+        <tycho-version>0.7.0</tycho-version>
+        <eclipse-site>http://download.eclipse.org/releases/galileo</eclipse-site>
+    </properties>
+
+    <modules>
+        <module>org.eclipse.mylyn.github.core</module>
+        <module>org.eclipse.mylyn.github.ui</module>
+        <module>org.eclipse.mylyn.github.feature</module>
+        <module>org.eclipse.mylyn.github_site</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>galileo</id>
+            <layout>p2</layout>
+            <url>${eclipse-site}</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.tycho</groupId>
+                <artifactId>tycho-maven-plugin</artifactId>
+                <version>${tycho-version}</version>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.tycho</groupId>
+                <artifactId>target-platform-configuration</artifactId>
+                <version>${tycho-version}</version>
+                <configuration>
+                    <resolver>p2</resolver>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonatype.tycho</groupId>
+                    <artifactId>maven-osgi-compiler-plugin</artifactId>
+                    <version>${tycho-version}</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.4.1</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.tycho</groupId>
+                    <artifactId>target-platform-configuration</artifactId>
+                    <version>${tycho-version}</version>
+                    <configuration>
+                        <resolver>p2</resolver>
+                        <pomDependencies>consider</pomDependencies>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <sourceDirectory>src/</sourceDirectory>
+    </build>
+</project>
