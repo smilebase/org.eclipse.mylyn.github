@@ -4,7 +4,7 @@ This is a fork of the "original connector":http://smilebase.github.com/org.eclip
 
 h2. Installation update site
 
-h3. http://smilebase.github.com/org.eclipse.mylyn.github/update
+h3. http://dgreen99.github.com/org.eclipse.mylyn.github/site
 
 *WARNING:* This connector has ALPHA status. 
 
