@@ -130,6 +130,10 @@ public class GitHubRepositoryConnectorUI extends AbstractRepositoryConnectorUi {
 				} else if (user != null && project != null) {
 					String repositoryUrl = GitHub.createGitHubUrl(user,project);
 					taskRepository = TasksUi.getRepositoryManager().getRepository(GitHub.CONNECTOR_KIND, repositoryUrl);
+					if (taskRepository == null) {
+						repositoryUrl = GitHub.createGitHubUrlAlternate(user,project);
+						taskRepository = TasksUi.getRepositoryManager().getRepository(GitHub.CONNECTOR_KIND, repositoryUrl);	
+					}
 				}
 				if (taskRepository != null) {
 					Region region = createRegion(textOffset, matcher);

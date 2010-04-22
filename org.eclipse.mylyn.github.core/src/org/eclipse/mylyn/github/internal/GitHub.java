@@ -13,8 +13,9 @@ public class GitHub {
 	public static final String CONNECTOR_KIND = "github";
 
 	public static final String HTTP_WWW_GITHUB_ORG = "http://www.github.org";
+	public static final String HTTP_GITHUB_COM = "http://github.com";
 
-	public static final Pattern URL_PATTERN = Pattern.compile(Pattern.quote(HTTP_WWW_GITHUB_ORG)+"/([^/]+)/([^/]+)");
+	public static final Pattern URL_PATTERN = Pattern.compile("(?:"+Pattern.quote(HTTP_WWW_GITHUB_ORG)+"|"+Pattern.quote(HTTP_GITHUB_COM)+")/([^/]+)/([^/]+)");
 
 	public static IStatus createStatus(int severity, String message) {
 		return new Status(severity, BUNDLE_ID, message);
@@ -65,7 +66,19 @@ public class GitHub {
 		return null;
 	}
 	
+	/**
+	 * uses github.com
+	 * @see #createGitHubUrlAlternate(String, String)
+	 */
 	public static String createGitHubUrl(String user,String project) {
+		return HTTP_GITHUB_COM+'/'+user+'/'+project;
+	}
+
+	/**
+	 * Uses www.github.org
+	 * @see #createGitHubUrl(String, String)
+	 */
+	public static String createGitHubUrlAlternate(String user,String project) {
 		return HTTP_WWW_GITHUB_ORG+'/'+user+'/'+project;
 	}
 }
