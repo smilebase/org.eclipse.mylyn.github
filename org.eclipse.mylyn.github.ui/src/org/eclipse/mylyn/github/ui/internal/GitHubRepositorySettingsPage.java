@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Composite;
 public class GitHubRepositorySettingsPage extends
 		AbstractRepositorySettingsPage {
 
-	static final String URL = "http://www.github.org";
+	static final String URL = "http://github.com";
 
 	private static final String PASS_LABEL_TEXT = "GitHub API Key";
 
@@ -98,7 +98,7 @@ public class GitHubRepositorySettingsPage extends
 				String urlText = repository.getUrl();
 				Matcher urlMatcher = GitHub.URL_PATTERN.matcher(urlText==null?"":urlText);
 				if (!urlMatcher.matches()) {
-					setStatus(GitHubUi.createErrorStatus("Server URL must be in the form http://github.com/user/project or http://www.github.org/user/project"));
+					setStatus(GitHubUi.createErrorStatus("Server URL must be in the form http://github.com/user/project or\nhttp://www.github.org/user/project"));
 					monitor.done();
 					return;
 				}
