@@ -43,6 +43,7 @@ public class GitHubService {
 	private final String gitURLBase = "https://github.com/api/v2/json/";
 
 	private final String gitIssueRoot = "issues/";
+	private final String gitUserRoot = "user/";
 
 	private final HttpClient httpClient;
 
@@ -64,6 +65,8 @@ public class GitHubService {
 	private final static String ADD_LABEL = "label/add/"; // Implemented
 	private final static String REMOVE_LABEL = "label/remove/"; // Implemented
 
+	private static final String EMAILS = "emails";
+
 
 	/**
 	 * Constructor, create the client and JSON/Java interface object.
@@ -73,6 +76,45 @@ public class GitHubService {
 		gson = new Gson();
 	}
 
+	/**
+	 * Verify that the provided credentials are correct
+	 * @param credentials
+	 *
+	 * @return true if and only if the credentials are correct
+	 */
+	public boolean verifyCredentials(GitHubCredentials credentials) throws GitHubServiceException {
+		PostMethod method = null;
+
+		boolean success = false;
+
+		try {
+			method = new PostMethod(gitURLBase + gitUserRoot + EMAILS);
+
+			// Set the users login and API token
+			final NameValuePair login = new NameValuePair("login", credentials.getUsername());
+			final NameValuePair token = new NameValuePair("token", credentials.getApiToken());
+			method.setRequestBody(new NameValuePair[] { login, token });
+
+			executeMethod(method);
+			
+			// if we reach here we know that credentials were good
+			success = true;
+		} catch (PermissionDeniedException e) {
+			// if we provide bad credentials, GitHub will return 403 or 401
+			return false;
+		} catch (GitHubServiceException e) {
+			throw e;
+		} catch (final RuntimeException runtimeException) {
+			throw runtimeException;
+		} catch (final Exception exception) {
+			throw new GitHubServiceException(exception);
+		} finally {
+			if (method != null)
+				method.releaseConnection();
+		}
+		return success;
+	}
+	
 	/**
 	 * Search the GitHub Issues API for a given search term
 	 * 
@@ -474,7 +516,6 @@ public class GitHubService {
 		
 	}
 	
-
 	private GitHubIssue changeIssueStatus(final String user, final String repo,
 			String githubOperation, final GitHubIssue issue,
 			final GitHubCredentials credentials) throws GitHubServiceException {
