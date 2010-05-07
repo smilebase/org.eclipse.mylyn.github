@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.5"?>
+
+<target name="Mylyn from Galileo release">
+<locations>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.mylyn.ide_feature.feature.group" version="3.2.2.v20090912-0400-e3x"/>
+<repository location="http://download.eclipse.org/releases/galileo"/>
+</location>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.pde.feature.group" version="3.5.1.R35x_v20090811-7Z7_F9zFDX-aT6Ywvh8_S93"/>
+<unit id="org.eclipse.mylyn.sdk_feature.feature.group" version="3.2.2.v20090912-0400-e3x"/>
+<repository location="http://download.eclipse.org/releases/galileo"/>
+</location>
+</locations>
+<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+</target>

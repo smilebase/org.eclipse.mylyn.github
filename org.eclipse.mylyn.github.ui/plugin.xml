@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.mylyn.tasks.ui.repositories">
+      <connectorCore
+            class="org.eclipse.mylyn.github.internal.GitHubRepositoryConnector"
+            id="org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnector"
+            name="%org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnector">
+      </connectorCore>
+      <connectorUi
+            brandingIcon="images/git-logo.png"
+            class="org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnectorUI"
+            id="org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnectorUI"
+            name="%org.eclipse.mylyn.github.ui.internal.GitHubRepositoryConnectorUI"
+            overlayIcon="images/git-logo.png">
+      </connectorUi>
+   </extension>
+   <extension
+         point="org.eclipse.mylyn.tasks.ui.editors">
+      <pageFactory
+            class="org.eclipse.mylyn.github.ui.internal.GitHubTaskEditorPageFactory"
+            id="org.eclipse.mylyn.github.ui.internal.GitHubTaskEditorPageFactory">
+      </pageFactory>
+   </extension>
+
+</plugin>
