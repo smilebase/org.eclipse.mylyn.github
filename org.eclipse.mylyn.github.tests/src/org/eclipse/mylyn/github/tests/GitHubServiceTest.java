@@ -89,9 +89,9 @@ public class GitHubServiceTest {
 		newIssue.setTitle(newIssue.getTitle()+" - modified");
 		newIssue.setBody(newIssue.getBody()+" - modified");
 		
-		service.editIssue(TEST_USER, TEST_PROJECT, issue, new GitHubCredentials(TEST_USER,API_KEY));
+		service.editIssue(TEST_USER, TEST_PROJECT, newIssue, new GitHubCredentials(TEST_USER,API_KEY));
 		
-		GitHubIssue showIssue = service.showIssue(TEST_USER, TEST_PROJECT, issue.getNumber());
+		GitHubIssue showIssue = service.showIssue(TEST_USER, TEST_PROJECT, newIssue.getNumber());
 		
 		assertTrue(showIssue != null);
 		assertEquals(newIssue.getTitle(),showIssue.getTitle());

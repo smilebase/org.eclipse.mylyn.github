@@ -1,17 +1,13 @@
 package org.eclipse.mylyn.github.internal;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse;
-import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse.ResponseKind;
+import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
@@ -31,9 +27,6 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 	 */
 	private GitHubTaskAttributeMapper taskAttributeMapper = null;
 	private final GitHubRepositoryConnector connector;
-	private DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
-	
-	private DateFormat githubDateFormat = new SimpleDateFormat("yyyy/mm/dd HH:MM:ss Z");
 
 	public GitHubTaskDataHandler(GitHubRepositoryConnector connector) {
 		this.connector = connector;
@@ -57,14 +50,14 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		
 		createOperations(data,issue);
 		
-		
 		createAttribute(data, GitHubTaskAttributes.KEY,issue.getNumber());
 		createAttribute(data, GitHubTaskAttributes.TITLE, issue.getTitle());
 		createAttribute(data, GitHubTaskAttributes.BODY, issue.getBody());
 		createAttribute(data, GitHubTaskAttributes.STATUS, issue.getState());
-		createAttribute(data, GitHubTaskAttributes.CREATION_DATE, toLocalDate(issue.getCreated_at()));
-		createAttribute(data, GitHubTaskAttributes.MODIFICATION_DATE, toLocalDate(issue.getCreated_at()));
-		createAttribute(data, GitHubTaskAttributes.CLOSED_DATE, toLocalDate(issue.getClosed_at()));
+		createAttribute(data, GitHubTaskAttributes.CREATION_DATE, issue.getCreated_at());
+		createAttribute(data, GitHubTaskAttributes.MODIFICATION_DATE, issue.getCreated_at());
+		createAttribute(data, GitHubTaskAttributes.CLOSED_DATE, issue.getClosed_at());
+		createAttribute(data, GitHubTaskAttributes.POSITION,issue.getPosition());
 		
 		if (isPartial(data)) {
 			data.setPartial(true);
@@ -72,7 +65,6 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 
 		return data;
 	}
-	
 	
 	private boolean isPartial(TaskData data) {
 		for (GitHubTaskAttributes attribute: GitHubTaskAttributes.values()) {
@@ -118,34 +110,6 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		return operation==GitHubTaskOperation.LEAVE?operation.getLabel()+issue.getState():operation.getLabel();
 	}
 
-	private String toLocalDate(String date) {
-		if (date != null && date.trim().length() > 0) {
-			// expect "2010/02/02 22:58:39 -0800"
-			try {
-				Date d = githubDateFormat.parse(date);
-				date = dateFormat.format(d);
-			} catch (ParseException e) {
-				// ignore
-			}
-		}
-		return date;
-	}
-
-	private String toGitHubDate(TaskData taskData,
-			GitHubTaskAttributes attr) {
-		TaskAttribute attribute = taskData.getRoot().getAttribute(attr.name());
-		String value = attribute==null?null:attribute.getValue();
-		if (value != null) {
-			try {
-				Date d = dateFormat.parse(value);
-				value = githubDateFormat.format(d);
-			} catch (ParseException e) {
-				// ignore
-			}
-		}
-		return value;
-	}
-
 	public TaskData createTaskData(TaskRepository repository,
 			IProgressMonitor monitor, String user, String project,
 			GitHubIssue issue) {
@@ -163,9 +127,10 @@ public class GitHubTaskDataHandler extends AbstractTaskDataHandler {
 		issue.setBody(getAttributeValue(taskData,GitHubTaskAttributes.BODY));
 		issue.setTitle(getAttributeValue(taskData,GitHubTaskAttributes.TITLE));
 		issue.setState(getAttributeValue(taskData,GitHubTaskAttributes.STATUS));
-		issue.setCreated_at(toGitHubDate(taskData,GitHubTaskAttributes.CREATION_DATE));
-		issue.setCreated_at(toGitHubDate(taskData,GitHubTaskAttributes.MODIFICATION_DATE));
-		issue.setCreated_at(toGitHubDate(taskData,GitHubTaskAttributes.CLOSED_DATE));
+		issue.setCreated_at(getAttributeValue(taskData,GitHubTaskAttributes.CREATION_DATE));
+		issue.setCreated_at(getAttributeValue(taskData,GitHubTaskAttributes.MODIFICATION_DATE));
+		issue.setCreated_at(getAttributeValue(taskData,GitHubTaskAttributes.CLOSED_DATE));
+		issue.setPosition(getAttributeValue(taskData,GitHubTaskAttributes.POSITION));
 		return issue;
 	}
 	

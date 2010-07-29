@@ -1,5 +1,8 @@
 package org.eclipse.mylyn.github.internal;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,4 +84,19 @@ public class GitHub {
 	public static String createGitHubUrlAlternate(String user,String project) {
 		return HTTP_WWW_GITHUB_ORG+'/'+user+'/'+project;
 	}
+	
+  /**
+   * @param dateString A date string as used by GitHub, e.g. "2009/04/17 12:57:52 -0700"
+   * @return The parsed date, or null, if it could not be parsed
+   */
+  public static Date parseDate(String dateString) {
+    if (dateString != null && dateString.trim().length() > 0) {
+      try {
+        return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss Z").parse(dateString);
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
+    }
+    return null;
+  }
 }

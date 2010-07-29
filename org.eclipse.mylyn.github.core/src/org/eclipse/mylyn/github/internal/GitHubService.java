@@ -261,7 +261,7 @@ public class GitHubService {
 
 			// Set the users login and API token
 			final NameValuePair login = new NameValuePair("login", credentials.getUsername());
-			final NameValuePair token = new NameValuePair("token", credentials.getUsername());
+			final NameValuePair token = new NameValuePair("token", credentials.getApiToken());
 			method.setRequestBody(new NameValuePair[] { login, token });
 
 			// execute HTTP GET method
@@ -458,9 +458,10 @@ public class GitHubService {
 		} catch (IOException e) {
 			throw new GitHubServiceException(e);
 		}
-		if (status != HttpStatus.SC_OK) {
+		if (status != HttpStatus.SC_OK && status != HttpStatus.SC_CREATED) {
 			switch (status) {
-			case HttpStatus.SC_UNAUTHORIZED:
+			case HttpStatus.SC_UNAUTHORIZED: 
+			  throw new PermissionDeniedException(method.getStatusLine());
 			case HttpStatus.SC_FORBIDDEN:
 				throw new PermissionDeniedException(method.getStatusLine());
 			default:

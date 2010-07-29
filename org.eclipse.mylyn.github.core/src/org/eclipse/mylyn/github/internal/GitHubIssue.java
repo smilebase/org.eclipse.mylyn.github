@@ -39,6 +39,8 @@ public class GitHubIssue {
 	private String updated_at;
 	private String closed_at;
 	
+	private String position;
+	
 	/**
 	 * Create a new GitHub Issue Object
 	 * 
@@ -50,13 +52,16 @@ public class GitHubIssue {
 	 *            - Issue title
 	 * @param body
 	 *            - The text body of the issue;
+	 * @param position
+	 *            - The position of the issue in the list of all issues
 	 */
 	public GitHubIssue(final String number, final String user,
-			final String title, final String body) {
+			final String title, final String body, final String position) {
 		this.number = number;
 		this.user = user;
 		this.title = title;
 		this.body = body;
+		this.position = position;
 	}
 
 	/**
@@ -67,6 +72,7 @@ public class GitHubIssue {
 		this.user = "";
 		this.title = "";
 		this.body = "";
+		this.position = "";
 	}
 
 	/**
@@ -87,6 +93,25 @@ public class GitHubIssue {
 	public void setNumber(final String number) {
 		this.number = number;
 	}
+	
+	/**
+   * Getter for the issue position.
+   * 
+   * @return The string representation of the issue position
+   */
+  public String getPosition() {
+    return position;
+  }
+
+  /**
+   * Set the issues's position.
+   * 
+   * @param position
+   *            - String representation of the position to set
+   */
+  public void setPosition(final String position) {
+    this.position = position;
+  }
 
 	/**
 	 * Getter for the user name of the issue creator
@@ -172,5 +197,10 @@ public class GitHubIssue {
 
 	public void setClosed_at(String closed_at) {
 		this.closed_at = closed_at;
-	}	
+	}
+	
+	@Override
+  public String toString() {
+    return String.format("%s #%s, position %s: %s", getClass().getSimpleName(), number, position, title);
+  }
 }

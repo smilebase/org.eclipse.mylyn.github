@@ -12,7 +12,8 @@ public enum GitHubTaskAttributes {
 	MODIFICATION_DATE("Modified",TaskAttribute.DATE_MODIFICATION,TaskAttribute.TYPE_DATETIME,true,true,false),
 	CLOSED_DATE("Closed",TaskAttribute.DATE_COMPLETION,TaskAttribute.TYPE_DATETIME,false,true,false),
 	
-	STATUS("Status",TaskAttribute.STATUS,TaskAttribute.TYPE_SHORT_TEXT,true,false,true)
+	STATUS("Status",TaskAttribute.STATUS,TaskAttribute.TYPE_SHORT_TEXT,true,false,true),
+	POSITION("Rank",TaskAttribute.RANK,TaskAttribute.TYPE_SHORT_TEXT,true,true,true)
 	;
 	
 

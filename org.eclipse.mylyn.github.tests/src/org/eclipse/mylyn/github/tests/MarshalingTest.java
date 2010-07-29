@@ -50,6 +50,7 @@ public class MarshalingTest {
 		assertNull(issue.getClosed_at());
 		assertEquals("dgreen99",issue.getUser());
 		assertEquals("open",issue.getState());
+		assertEquals("1.0", issue.getPosition());
 	}
 
 	private String getResource(String resource) {

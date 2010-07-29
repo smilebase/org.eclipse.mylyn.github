@@ -7,6 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses( { // 
 	GitHubServiceTest.class,
+	GitHubTest.class,
 	MarshalingTest.class
 	})
 public class AllHeadlessTests {
