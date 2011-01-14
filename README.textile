@@ -1,12 +1,10 @@
-h2. Fork Specifics
+h2. Hibernation
 
-This is a fork of the "original connector":http://smilebase.github.com/org.eclipse.mylyn.github by smilebase.  "Configuration/installation specifics for this fork can be found in the project wiki":http://wiki.github.com/dgreen99/org.eclipse.mylyn.github/
+In a discussion on "David Green's blog":http://greensopinion.blogspot.com/2010/02/good-things-come-in-threes.html Chris Aniszczyk suggested that EGit might be interested in a contribution of the GitHub Mylyn connector originally developed by "Christian Trutz":http://github.com/smilebase/org.eclipse.mylyn.github.
 
-h2. Installation update site
+Both Christian and David (who added new features to the connector "at":http://github.com/dgreen99/org.eclipse.mylyn.github) expressed their interest in contributing their work to EGit ("see also":https://bugs.eclipse.org/bugs/show_bug.cgi?id=303009).
 
-h3. http://dgreen99.github.com/org.eclipse.mylyn.github/site
-
-*WARNING:* This connector has ALPHA status. 
+The work on Mylyn Github connector continues under umbrella of "EGit":http://www.eclipse.org/egit and this project will be hibernated.
 
 h2. Developers
 
