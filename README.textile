@@ -1,5 +1,7 @@
 h2. Hibernation updates
 
+**03/28/2011** Mylyn Github connector is part of "Eclipse Egit":http://www.eclipse.org/egit now. If you want to contribute, see also "Egit contributor guide":http://wiki.eclipse.org/EGit/Contributor_Guide.
+
 03/07/2011 See also "Mylyn Meetings":http://wiki.eclipse.org/Mylyn/Meetings March 10th 
 
 h2. Hibernation
